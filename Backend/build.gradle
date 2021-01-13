@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group 'org.augusto'
+version '1.0-SNAPSHOT'
+
+// defines which source code constructs are allowed
+sourceCompatibility = '11'
+// defines the generated JVM bytecode version
+targetCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.27.Final'
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.27.Final'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
+}
