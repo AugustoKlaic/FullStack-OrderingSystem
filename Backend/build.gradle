@@ -1,4 +1,8 @@
 plugins {
+    // add springboot support
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    // automatic dependency search ~no need to specify version it uses springboot version
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
 }
 
@@ -15,7 +19,5 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.27.Final'
-    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.27.Final'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
