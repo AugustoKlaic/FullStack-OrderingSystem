@@ -1,6 +1,6 @@
 plugins {
     // add springboot support
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
     // automatic dependency search ~no need to specify version it uses springboot version
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
@@ -19,5 +19,5 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
