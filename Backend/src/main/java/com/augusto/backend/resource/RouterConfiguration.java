@@ -16,7 +16,8 @@ public class RouterConfiguration {
     public RouterFunction<ServerResponse> categoryRouter(CategoryHandler categoryHandler) {
         return route().path("/categories", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
-                        .GET("", categoryHandler::getCategories)))
+                        .GET("", categoryHandler::getCategories)
+                        .GET("/{id}", categoryHandler::getCategoriesById)))
                 .build();
     }
 
