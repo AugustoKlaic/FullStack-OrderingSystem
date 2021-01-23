@@ -1,6 +1,5 @@
 package com.augusto.backend.resource;
 
-import com.augusto.backend.domain.Category;
 import com.augusto.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,11 +24,9 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
-        Integer id = Integer.parseInt(serverRequest.pathVariable("id"));
 
-
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.fromCallable(() ->
-                        categoryService.findById(id)), Category.class);
+        return Mono.justOrEmpty(categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
+                .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 }
