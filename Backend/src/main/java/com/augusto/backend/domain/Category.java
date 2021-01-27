@@ -1,5 +1,8 @@
 package com.augusto.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,7 +14,8 @@ public class Category {
     private Integer id;
     private String name;
 
-    @ManyToMany(mappedBy = "categoryList")
+    @ManyToMany(mappedBy = "categoryList", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Product> productList;
 
     public Category() {

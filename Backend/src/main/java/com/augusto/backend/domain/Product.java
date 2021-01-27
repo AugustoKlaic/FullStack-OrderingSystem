@@ -1,7 +1,8 @@
 package com.augusto.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,10 +15,11 @@ public class Product {
     private Double price;
 
     @ManyToMany
+    @JsonBackReference
     @JoinTable(name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categoryList = new ArrayList<>();
+    private List<Category> categoryList;
 
     public Product() {
     }
