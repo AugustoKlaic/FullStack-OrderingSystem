@@ -1,7 +1,10 @@
 package com.augusto.backend.resource;
 
+import com.augusto.backend.resource.exception.WebException;
 import com.augusto.backend.service.CategoryService;
+import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -24,9 +27,10 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
-
-        return Mono.justOrEmpty(categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
+        return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
+                        .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
+
     }
 }

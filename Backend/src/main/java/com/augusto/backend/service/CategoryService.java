@@ -2,10 +2,9 @@ package com.augusto.backend.service;
 
 import com.augusto.backend.domain.Category;
 import com.augusto.backend.repository.CategoryRepository;
+import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -16,7 +15,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Optional<Category> findById(Integer id) {
-        return categoryRepository.findById(id);
+    public Category findById(Integer id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
     }
 }
