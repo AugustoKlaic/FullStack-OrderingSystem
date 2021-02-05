@@ -21,4 +21,13 @@ public class RouterConfiguration {
                 .build();
     }
 
+    @Bean
+    public RouterFunction<ServerResponse> clientRouter(ClientHandler clientHandler) {
+        return route().path("/client", builder -> builder
+                .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
+                        .GET("", clientHandler::getClients)
+                        .GET("/{id}", clientHandler::getClientById )))
+                .build();
+    }
+
 }

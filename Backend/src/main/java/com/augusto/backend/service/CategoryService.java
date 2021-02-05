@@ -15,7 +15,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category findById(Integer id) {
+    public Category findById(final Integer id) {
         return categoryRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
     }
 }
