@@ -9,10 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @SpringBootApplication
@@ -26,10 +26,11 @@ public class ApplicationMain implements CommandLineRunner {
     private final ClientRepository clientRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final PaymentRepository paymentRepository;
+    private final PurchaseOrderItemRepository purchaseOrderItemRepository;
 
     @Autowired
     public ApplicationMain(CategoryRepository categoryRepository, ProductRepository productRepository, CityRepository cityRepository,
-                           StateRepository stateRepository, AddressRespository addressRespository, ClientRepository clientRepository, PurchaseOrderRepository purchaseOrderRepository, PaymentRepository paymentRepository) {
+                           StateRepository stateRepository, AddressRespository addressRespository, ClientRepository clientRepository, PurchaseOrderRepository purchaseOrderRepository, PaymentRepository paymentRepository, PurchaseOrderItemRepository purchaseOrderItemRepository) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.cityRepository = cityRepository;
@@ -38,6 +39,7 @@ public class ApplicationMain implements CommandLineRunner {
         this.clientRepository = clientRepository;
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.paymentRepository = paymentRepository;
+        this.purchaseOrderItemRepository = purchaseOrderItemRepository;
     }
 
     /*
@@ -52,9 +54,9 @@ public class ApplicationMain implements CommandLineRunner {
         Category category1 = new Category(null, "Informatics", new ArrayList<>());
         Category category2 = new Category(null, "Office", new ArrayList<>());
 
-        Product product1 = new Product(null, "Computer", 2000.00, new ArrayList<>());
-        Product product2 = new Product(null, "Printer", 800.00, new ArrayList<>());
-        Product product3 = new Product(null, "Mouse", 80.00, new ArrayList<>());
+        Product product1 = new Product(null, "Computer", 2000.00, new ArrayList<>(), new HashSet<>());
+        Product product2 = new Product(null, "Printer", 800.00, new ArrayList<>(), new HashSet<>());
+        Product product3 = new Product(null, "Mouse", 80.00, new ArrayList<>(), new HashSet<>());
 
         category1.getProductList().addAll(Arrays.asList(product1, product2, product3));
         category2.getProductList().add(product2);
@@ -97,8 +99,8 @@ public class ApplicationMain implements CommandLineRunner {
         // insertion of purchaseOrders and payments
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        PurchaseOrder purchaseOrder1 = new PurchaseOrder(null, sdf.parse("30/09/2020 10:30"), null, client1, address1);
-        PurchaseOrder purchaseOrder2 = new PurchaseOrder(null, sdf.parse("10/10/2020 19:37"), null, client1, address2);
+        PurchaseOrder purchaseOrder1 = new PurchaseOrder(null, sdf.parse("30/09/2020 10:30"), null, client1, address1, new HashSet<>());
+        PurchaseOrder purchaseOrder2 = new PurchaseOrder(null, sdf.parse("10/10/2020 19:37"), null, client1, address2, new HashSet<>());
 
         Payment creditCardPayment = new CreditCardPayment(null, PaymentStateEnum.SETTLED, purchaseOrder1, 6);
         Payment billetPayment = new BilletPayment(null, PaymentStateEnum.PENDING, purchaseOrder2, sdf.parse("20/10/2020 00:00"), null);
@@ -109,6 +111,21 @@ public class ApplicationMain implements CommandLineRunner {
 
         purchaseOrderRepository.saveAll(Arrays.asList(purchaseOrder1, purchaseOrder2));
         paymentRepository.saveAll(Arrays.asList(billetPayment, creditCardPayment));
+
+        // insertion of purchaseOrderItems
+
+        PurchaseOrderItem purchaseOrderItem1 = new PurchaseOrderItem(purchaseOrder1, product1, 0.00, 1, 2000.00);
+        PurchaseOrderItem purchaseOrderItem2 = new PurchaseOrderItem(purchaseOrder1, product3, 0.00, 2, 80.00);
+        PurchaseOrderItem purchaseOrderItem3 = new PurchaseOrderItem(purchaseOrder2, product2, 100.00, 1, 800.00);
+
+        purchaseOrder1.getItems().addAll(Arrays.asList(purchaseOrderItem1, purchaseOrderItem2));
+        purchaseOrder2.getItems().add(purchaseOrderItem3);
+
+        product1.getItems().add(purchaseOrderItem1);
+        product2.getItems().add(purchaseOrderItem3);
+        product3.getItems().add(purchaseOrderItem2);
+
+        purchaseOrderItemRepository.saveAll(Arrays.asList(purchaseOrderItem1, purchaseOrderItem2, purchaseOrderItem3));
 
     }
 

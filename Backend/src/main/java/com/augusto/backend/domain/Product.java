@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Product {
@@ -21,15 +22,19 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categoryList;
 
+    @OneToMany(mappedBy = "id.product")
+    private Set<PurchaseOrderItem> items;
+
     public Product() {
     }
 
-    public Product(Integer id, String name, Double price, List<Category> categoryList) {
+    public Product(Integer id, String name, Double price, List<Category> categoryList, Set<PurchaseOrderItem> items) {
         this();
         this.id = id;
         this.name = name;
         this.price = price;
         this.categoryList = categoryList;
+        this.items = items;
     }
 
     public Integer getId() {
@@ -62,5 +67,13 @@ public class Product {
 
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList = categoryList;
+    }
+
+    public Set<PurchaseOrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<PurchaseOrderItem> items) {
+        this.items = items;
     }
 }

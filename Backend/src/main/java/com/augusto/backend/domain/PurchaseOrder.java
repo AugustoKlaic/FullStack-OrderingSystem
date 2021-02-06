@@ -2,6 +2,9 @@ package com.augusto.backend.domain;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class PurchaseOrder {
@@ -22,16 +25,24 @@ public class PurchaseOrder {
     @JoinColumn(name = "delivery_address_id")
     private Address address;
 
+    @OneToMany(mappedBy = "id.purchaseOrder")
+    private Set<PurchaseOrderItem> items;
+
     public PurchaseOrder() {
     }
 
-    public PurchaseOrder(Integer id, Date instant, Payment payment, Client client, Address address) {
+    public PurchaseOrder(Integer id, Date instant, Payment payment, Client client, Address address, Set<PurchaseOrderItem> items) {
         this();
         this.id = id;
         this.instant = instant;
         this.payment = payment;
         this.client = client;
         this.address = address;
+        this.items = items;
+    }
+
+    public List<PurchaseOrder> getPurchaseOrders() {
+        return this.items.stream().map(PurchaseOrderItem::getPurchaseOrder).collect(Collectors.toList());
     }
 
     public Integer getId() {
@@ -72,5 +83,13 @@ public class PurchaseOrder {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Set<PurchaseOrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<PurchaseOrderItem> items) {
+        this.items = items;
     }
 }
