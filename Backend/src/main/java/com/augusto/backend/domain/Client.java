@@ -4,7 +4,6 @@ import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,10 +26,12 @@ public class Client {
     @CollectionTable(name = "telephone")
     private Set<String> telephones;
 
+    private List<Order> orders;
+
     public Client() {
     }
 
-    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, List<Address> addresses, Set<String> telephones) {
+    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, List<Address> addresses, Set<String> telephones, List<Order> orders) {
         this();
         this.id = id;
         this.name = name;
@@ -39,6 +40,7 @@ public class Client {
         this.clientType = clientType;
         this.addresses = addresses;
         this.telephones = telephones;
+        this.orders = orders;
     }
 
     public Integer getId() {
@@ -95,5 +97,13 @@ public class Client {
 
     public void setTelephones(Set<String> telephones) {
         this.telephones = telephones;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

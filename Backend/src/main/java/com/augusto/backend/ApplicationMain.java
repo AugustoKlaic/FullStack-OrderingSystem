@@ -77,7 +77,7 @@ public class ApplicationMain implements CommandLineRunner {
         // insertion of adress, client and telephone
 
         Client client1 = new Client(null, "Maria Silva", "maria@gmail.com", "86101153053",
-                ClientTypeEnum.LEGAL_PERSON, new ArrayList<>(), Set.of("33401041", "97330690"));
+                ClientTypeEnum.LEGAL_PERSON, new ArrayList<>(), Set.of("33401041", "97330690"), new ArrayList<>());
 
         Address address1 = new Address(null, "Rua flores", "300", "Apto 202", "Jardim", "91380240", city1, client1);
         Address address2 = new Address(null, "Avenida Matos", "105", "Sala 800", "Centro", "91240380", city2, client1);
