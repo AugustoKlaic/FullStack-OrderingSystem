@@ -4,6 +4,7 @@ import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,10 +20,10 @@ public class Client {
     private ClientTypeEnum clientType;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client")
     private List<Address> addresses;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "telephone")
     private Set<String> telephones;
 

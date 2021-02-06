@@ -1,5 +1,7 @@
 package com.augusto.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,7 @@ public class City {
     private String name;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "state_id")
     private State state;
 

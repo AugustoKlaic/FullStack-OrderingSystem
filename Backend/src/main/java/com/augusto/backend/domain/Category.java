@@ -14,7 +14,7 @@ public class Category {
     private Integer id;
     private String name;
 
-    @ManyToMany(mappedBy = "categoryList", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "categoryList")
     @JsonManagedReference
     private List<Product> productList;
 
