@@ -2,6 +2,9 @@ package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 
+import javax.persistence.Entity;
+
+@Entity
 public class CreditCardPayment extends Payment {
 
     private Integer installmentsNumber;
@@ -14,8 +17,8 @@ public class CreditCardPayment extends Payment {
         this.installmentsNumber = installmentsNumber;
     }
 
-    public CreditCardPayment(Integer id, PaymentStateEnum paymentState, Order order, Integer installmentsNumber) {
-        super(id, paymentState, order);
+    public CreditCardPayment(Integer id, PaymentStateEnum paymentState, PurchaseOrder purchaseOrder, Integer installmentsNumber) {
+        super(id, paymentState, purchaseOrder);
         this.installmentsNumber = installmentsNumber;
     }
 

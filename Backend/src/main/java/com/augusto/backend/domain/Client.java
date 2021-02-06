@@ -26,12 +26,13 @@ public class Client {
     @CollectionTable(name = "telephone")
     private Set<String> telephones;
 
-    private List<Order> orders;
+    @OneToMany(mappedBy = "client")
+    private List<PurchaseOrder> purchaseOrders;
 
     public Client() {
     }
 
-    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, List<Address> addresses, Set<String> telephones, List<Order> orders) {
+    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, List<Address> addresses, Set<String> telephones, List<PurchaseOrder> purchaseOrders) {
         this();
         this.id = id;
         this.name = name;
@@ -40,7 +41,7 @@ public class Client {
         this.clientType = clientType;
         this.addresses = addresses;
         this.telephones = telephones;
-        this.orders = orders;
+        this.purchaseOrders = purchaseOrders;
     }
 
     public Integer getId() {
@@ -99,11 +100,11 @@ public class Client {
         this.telephones = telephones;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public List<PurchaseOrder> getPurchaseOrders() {
+        return purchaseOrders;
     }
 
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
+    public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
     }
 }

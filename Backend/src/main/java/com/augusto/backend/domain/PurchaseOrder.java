@@ -1,19 +1,31 @@
 package com.augusto.backend.domain;
 
+import javax.persistence.*;
 import java.util.Date;
 
-public class Order {
+@Entity
+public class PurchaseOrder {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date instant;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "purchaseOrder")
     private Payment payment;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_address_id")
     private Address address;
 
-    public Order() {
+    public PurchaseOrder() {
     }
 
-    public Order(Integer id, Date instant, Payment payment, Client client, Address address) {
+    public PurchaseOrder(Integer id, Date instant, Payment payment, Client client, Address address) {
         this();
         this.id = id;
         this.instant = instant;

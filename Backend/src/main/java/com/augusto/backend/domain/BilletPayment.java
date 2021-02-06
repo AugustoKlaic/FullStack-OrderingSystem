@@ -2,8 +2,10 @@ package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 
+import javax.persistence.Entity;
 import java.util.Date;
 
+@Entity
 public class BilletPayment extends Payment {
 
     private Date dueDate;
@@ -18,8 +20,8 @@ public class BilletPayment extends Payment {
         this.paymentDate = paymentDate;
     }
 
-    public BilletPayment(Integer id, PaymentStateEnum paymentState, Order order, Date dueDate, Date paymentDate) {
-        super(id, paymentState, order);
+    public BilletPayment(Integer id, PaymentStateEnum paymentState, PurchaseOrder purchaseOrder, Date dueDate, Date paymentDate) {
+        super(id, paymentState, purchaseOrder);
         this.dueDate = dueDate;
         this.paymentDate = paymentDate;
     }

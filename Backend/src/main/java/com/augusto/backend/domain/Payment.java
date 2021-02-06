@@ -2,20 +2,29 @@ package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 
-public class Payment {
+import javax.persistence.*;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Payment {
+
+    @Id
     private Integer id;
     private PaymentStateEnum paymentState;
-    private Order order;
+
+    @OneToOne
+    @JoinColumn(name = "purchase_order_id")
+    @MapsId
+    private PurchaseOrder purchaseOrder;
 
     public Payment() {
     }
 
-    public Payment(Integer id, PaymentStateEnum paymentState, Order order) {
+    public Payment(Integer id, PaymentStateEnum paymentState, PurchaseOrder purchaseOrder) {
         this();
         this.id = id;
         this.paymentState = paymentState;
-        this.order = order;
+        this.purchaseOrder = purchaseOrder;
     }
 
     public Integer getId() {
@@ -34,11 +43,11 @@ public class Payment {
         this.paymentState = paymentState;
     }
 
-    public Order getOrder() {
-        return order;
+    public PurchaseOrder getOrder() {
+        return purchaseOrder;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 }
