@@ -13,7 +13,6 @@ public class City {
     private String name;
 
     @ManyToOne
-    @JsonManagedReference
     @JoinColumn(name = "state_id")
     private State state;
 

@@ -1,11 +1,14 @@
 package com.augusto.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
 @Entity
 public class PurchaseOrderItem {
 
+    @JsonIgnore
     @EmbeddedId
     private PurchaseOrderItemId id = new PurchaseOrderItemId();
 
@@ -25,6 +28,7 @@ public class PurchaseOrderItem {
         this.price = price;
     }
 
+    @JsonIgnore
     public PurchaseOrder getPurchaseOrder() {
         return id.getPurchaseOrder();
     }

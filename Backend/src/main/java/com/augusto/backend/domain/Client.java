@@ -1,7 +1,7 @@
 package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.ClientTypeEnum;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,7 +18,6 @@ public class Client {
     private String nationalIdentity;
     private ClientTypeEnum clientType;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "client")
     private List<Address> addresses;
 
@@ -27,6 +26,7 @@ public class Client {
     private Set<String> telephones;
 
     @OneToMany(mappedBy = "client")
+    @JsonIgnore
     private List<PurchaseOrder> purchaseOrders;
 
     public Client() {

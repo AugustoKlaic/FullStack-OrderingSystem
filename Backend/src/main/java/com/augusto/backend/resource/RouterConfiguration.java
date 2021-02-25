@@ -26,8 +26,16 @@ public class RouterConfiguration {
         return route().path("/clients", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", clientHandler::getClients)
-                        .GET("/{id}", clientHandler::getClientById )))
+                        .GET("/{id}", clientHandler::getClientById)))
                 .build();
     }
 
+    @Bean
+    public RouterFunction<ServerResponse> purchaseOrderRouter(PurchaseOrderHandler purchaseOrderHandler) {
+        return route().path("/purchase-orders", builder -> builder
+                .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
+                        .GET("", purchaseOrderHandler::getClients)
+                        .GET("/{id}", purchaseOrderHandler::getPurchaseOrderById)))
+                .build();
+    }
 }

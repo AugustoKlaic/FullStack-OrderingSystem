@@ -15,7 +15,6 @@ public class Category {
     private String name;
 
     @ManyToMany(mappedBy = "categoryList")
-    @JsonManagedReference
     private List<Product> productList;
 
     public Category() {

@@ -1,6 +1,8 @@
 package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -15,6 +17,7 @@ public abstract class Payment {
     @OneToOne
     @JoinColumn(name = "purchase_order_id")
     @MapsId
+    @JsonIgnore
     private PurchaseOrder purchaseOrder;
 
     public Payment() {
@@ -43,6 +46,7 @@ public abstract class Payment {
         this.paymentState = paymentState;
     }
 
+    @JsonIgnore
     public PurchaseOrder getOrder() {
         return purchaseOrder;
     }

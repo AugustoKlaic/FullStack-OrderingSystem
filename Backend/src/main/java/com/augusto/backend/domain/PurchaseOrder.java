@@ -1,10 +1,11 @@
 package com.augusto.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class PurchaseOrder {
@@ -12,6 +13,8 @@ public class PurchaseOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private Date instant;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "purchaseOrder")
@@ -39,10 +42,6 @@ public class PurchaseOrder {
         this.client = client;
         this.address = address;
         this.items = items;
-    }
-
-    public List<PurchaseOrder> getPurchaseOrders() {
-        return this.items.stream().map(PurchaseOrderItem::getPurchaseOrder).collect(Collectors.toList());
     }
 
     public Integer getId() {

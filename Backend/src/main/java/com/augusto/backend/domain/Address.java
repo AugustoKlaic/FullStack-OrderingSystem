@@ -1,6 +1,6 @@
 package com.augusto.backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -21,7 +21,7 @@ public class Address {
     private City city;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnore
     @JoinColumn(name = "client_id")
     private Client client;
 

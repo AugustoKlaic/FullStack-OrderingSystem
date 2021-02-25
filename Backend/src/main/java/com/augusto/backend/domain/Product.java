@@ -1,10 +1,12 @@
 package com.augusto.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Product {
@@ -16,13 +18,14 @@ public class Product {
     private Double price;
 
     @ManyToMany
-    @JsonBackReference
+    @JsonIgnore
     @JoinTable(name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categoryList;
 
     @OneToMany(mappedBy = "id.product")
+    @JsonIgnore
     private Set<PurchaseOrderItem> items;
 
     public Product() {
@@ -35,6 +38,12 @@ public class Product {
         this.price = price;
         this.categoryList = categoryList;
         this.items = items;
+    }
+
+    @JsonIgnore
+    public List<PurchaseOrder> getPurchaseOrders() {
+        return this.items.stream().map(PurchaseOrderItem::getPurchaseOrder)
+                .collect(Collectors.toList());
     }
 
     public Integer getId() {

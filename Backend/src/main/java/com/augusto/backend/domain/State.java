@@ -1,6 +1,7 @@
 package com.augusto.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +14,7 @@ public class State {
     private Integer id;
     private String name;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(mappedBy = "state")
     private List<City> cities;
 
