@@ -19,7 +19,7 @@ public class Client {
     private ClientTypeEnum clientType;
 
     @OneToMany(mappedBy = "client")
-    private List<Address> addresses;
+    private Set<Address> addresses;
 
     @ElementCollection
     @CollectionTable(name = "telephone")
@@ -32,7 +32,7 @@ public class Client {
     public Client() {
     }
 
-    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, List<Address> addresses, Set<String> telephones, List<PurchaseOrder> purchaseOrders) {
+    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, Set<Address> addresses, Set<String> telephones, List<PurchaseOrder> purchaseOrders) {
         this();
         this.id = id;
         this.name = name;
@@ -84,11 +84,11 @@ public class Client {
         this.clientType = clientType;
     }
 
-    public List<Address> getAddresses() {
+    public Set<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<Address> addresses) {
+    public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
 
