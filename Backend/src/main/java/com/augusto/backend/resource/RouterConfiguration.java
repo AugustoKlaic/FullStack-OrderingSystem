@@ -17,6 +17,7 @@ public class RouterConfiguration {
         return route().path("/categories", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", categoryHandler::getCategories)
+                        .POST("", categoryHandler::createCategory)
                         .GET("/{id}", categoryHandler::getCategoriesById)))
                 .build();
     }
