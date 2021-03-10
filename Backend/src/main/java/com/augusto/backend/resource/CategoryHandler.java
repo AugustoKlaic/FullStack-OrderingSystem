@@ -44,4 +44,11 @@ public class CategoryHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(createdCategory));
     }
+
+    public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(Category.class).map(categoryService::update)
+                .flatMap(updatedCategory -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
+                        .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
+    }
 }

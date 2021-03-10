@@ -18,7 +18,8 @@ public class RouterConfiguration {
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", categoryHandler::getCategories)
                         .POST("", categoryHandler::createCategory)
-                        .GET("/{id}", categoryHandler::getCategoriesById)))
+                        .GET("/{id}", categoryHandler::getCategoriesById)
+                        .PUT("/{id}", categoryHandler::updateCategory)))
                 .build();
     }
 

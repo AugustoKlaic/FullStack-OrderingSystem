@@ -22,4 +22,8 @@ public class CategoryService {
     public Category create(final Category category) {
         return categoryRepository.save(category);
     }
+
+    public Category update(final Category category) {
+        return categoryRepository.save(findById(category.getId()));
+    }
 }
