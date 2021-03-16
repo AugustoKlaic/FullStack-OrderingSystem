@@ -19,6 +19,7 @@ public class RouterConfiguration {
                         .GET("", categoryHandler::getCategories)
                         .POST("", categoryHandler::createCategory)
                         .PUT("", categoryHandler::updateCategory)
+                        .DELETE("/{id}", categoryHandler::deleteCategoryById)
                         .GET("/{id}", categoryHandler::getCategoriesById)))
                 .build();
     }

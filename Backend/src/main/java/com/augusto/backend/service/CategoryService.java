@@ -6,6 +6,8 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
@@ -23,9 +25,16 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    @Transactional
     public Category update(final Category category) {
         final Category updateCategory = findById(category.getId());
         updateCategory.setName(category.getName());
         return categoryRepository.save(updateCategory);
+    }
+
+    @Transactional
+    public Integer deleteById(final Integer id) {
+        categoryRepository.deleteById(id);
+        return id;
     }
 }

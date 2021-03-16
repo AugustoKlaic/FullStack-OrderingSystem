@@ -51,4 +51,9 @@ public class CategoryHandler {
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
                         .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
     }
+
+    public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
+        return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
+                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId));
+    }
 }
