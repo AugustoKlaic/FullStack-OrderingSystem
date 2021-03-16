@@ -5,7 +5,6 @@ import com.augusto.backend.repository.CategoryRepository;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CategoryService {
@@ -27,7 +26,6 @@ public class CategoryService {
     public Category update(final Category category) {
         final Category updateCategory = findById(category.getId());
         updateCategory.setName(category.getName());
-        updateCategory.setProductList(category.getProductList());
         return categoryRepository.save(updateCategory);
     }
 }
