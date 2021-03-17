@@ -32,7 +32,7 @@ public class CategoryHandler {
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
-                .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.BAD_REQUEST)
                         .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
 
     }
@@ -54,6 +54,8 @@ public class CategoryHandler {
 
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
-                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId));
+                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                        .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
     }
 }

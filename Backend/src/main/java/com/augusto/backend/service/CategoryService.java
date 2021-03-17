@@ -34,7 +34,7 @@ public class CategoryService {
 
     @Transactional
     public Integer deleteById(final Integer id) {
-        categoryRepository.deleteById(id);
+        categoryRepository.deleteById(findById(id).getId());
         return id;
     }
 }
