@@ -25,4 +25,8 @@ dependencies {
 
     //DB dependencies
     runtimeOnly 'mysql:mysql-connector-java'
+
+    //hibernate validations
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '7.0.1.Final'
+
 }
