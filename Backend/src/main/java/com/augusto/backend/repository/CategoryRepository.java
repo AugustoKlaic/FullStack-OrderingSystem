@@ -7,10 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
+
+    @Query("select distinct c from Category c inner join fetch c.productList")
+    public List<Category> findAll();
 
     @Query("select c from Category c left join fetch c.productList where c.id = :id ")
     public Optional<Category> findById(@Param("id") Integer id);

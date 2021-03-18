@@ -25,8 +25,9 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.fromCallable(() -> "Rest test"), String.class);
+        return Mono.fromCallable(categoryService::findAllCategories)
+                .flatMap(categories -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(categories));
     }
 
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {

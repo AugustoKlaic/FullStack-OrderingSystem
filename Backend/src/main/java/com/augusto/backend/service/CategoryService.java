@@ -1,12 +1,15 @@
 package com.augusto.backend.service;
 
 import com.augusto.backend.domain.Category;
+import com.augusto.backend.dto.CategoryDto;
 import com.augusto.backend.repository.CategoryRepository;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -17,8 +20,14 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    public List<CategoryDto> findAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(category -> new CategoryDto(category.getId(), category.getName())).collect(Collectors.toList());
+    }
+
     public Category findById(final Integer id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
     }
 
     public Category create(final Category category) {
