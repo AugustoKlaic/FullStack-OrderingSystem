@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,8 @@ public class CategoryService {
                 .orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
     }
 
-    public Category create(final Category category) {
-        return categoryRepository.save(category);
+    public Category create(final CategoryDto categoryDto) {
+        return categoryRepository.save(toDomainObject(categoryDto));
     }
 
     @Transactional
@@ -45,5 +46,9 @@ public class CategoryService {
     public Integer deleteById(final Integer id) {
         categoryRepository.deleteById(findById(id).getId());
         return id;
+    }
+
+    private Category toDomainObject(final CategoryDto categoryDto) {
+        return new Category(categoryDto.getId(), categoryDto.getName(), new ArrayList<>());
     }
 }

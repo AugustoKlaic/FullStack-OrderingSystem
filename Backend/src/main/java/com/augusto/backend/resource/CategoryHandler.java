@@ -1,6 +1,7 @@
 package com.augusto.backend.resource;
 
 import com.augusto.backend.domain.Category;
+import com.augusto.backend.dto.CategoryDto;
 import com.augusto.backend.resource.exception.WebException;
 import com.augusto.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ public class CategoryHandler {
 
     private static final String CATEGORY_URI = "/categories/";
     private final CategoryService categoryService;
+    private final RequestValidationHandler requestValidationHandler;
 
     @Autowired
-    public CategoryHandler(CategoryService categoryService) {
+    public CategoryHandler(CategoryService categoryService, RequestValidationHandler requestValidationHandler) {
         this.categoryService = categoryService;
+        this.requestValidationHandler = requestValidationHandler;
     }
 
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
@@ -39,8 +42,8 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(Category.class)
-                .map(categoryService::create)
+        return serverRequest.bodyToMono(CategoryDto.class)
+                .map(requestValidationHandler::requireValidBody)
                 .flatMap(createdCategory -> ServerResponse.created(URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(createdCategory));
