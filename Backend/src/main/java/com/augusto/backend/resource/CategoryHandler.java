@@ -42,11 +42,11 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(CategoryDto.class)
-                .map(requestValidationHandler::requireValidBody)
-                .flatMap(createdCategory -> ServerResponse.created(URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(createdCategory));
+        return requestValidationHandler.requireValidBody(body ->
+                Mono.fromCallable(() -> categoryService.create(body))
+                .map(createdCategory -> URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
+                .map(ServerResponse::created)
+                .flatMap(ServerResponse.HeadersBuilder::build), serverRequest, CategoryDto.class);
     }
 
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {

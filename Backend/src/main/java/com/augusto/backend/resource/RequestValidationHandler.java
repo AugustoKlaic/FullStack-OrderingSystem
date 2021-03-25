@@ -13,16 +13,15 @@ import java.util.function.Function;
 public class RequestValidationHandler {
     private final Validator validator;
 
-    @Autowired
     public RequestValidationHandler(Validator validator) {
         this.validator = validator;
     }
 
-    public <BODY> Mono<ServerResponse> requireValidBody(Function<Mono<BODY>, Mono<ServerResponse>> block,
+    public <BODY> Mono<ServerResponse> requireValidBody(Function<BODY, Mono<ServerResponse>> block,
                                                         ServerRequest serverRequest, Class<BODY> bodyClass) {
 
         return serverRequest.bodyToMono(bodyClass).flatMap(body -> {
-            return validator.validate(body).isEmpty() ? block.apply(Mono.just(body))
+            return validator.validate(body).isEmpty() ? block.apply(body)
                     : ServerResponse.unprocessableEntity().build();
         });
 
