@@ -19,12 +19,10 @@ public class CategoryHandler {
 
     private static final String CATEGORY_URI = "/categories/";
     private final CategoryService categoryService;
-    private final RequestValidationHandler requestValidationHandler;
 
     @Autowired
-    public CategoryHandler(CategoryService categoryService, RequestValidationHandler requestValidationHandler) {
+    public CategoryHandler(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.requestValidationHandler = requestValidationHandler;
     }
 
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
@@ -42,11 +40,11 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
-        return requestValidationHandler.requireValidBody(body ->
-                Mono.fromCallable(() -> categoryService.create(body))
-                .map(createdCategory -> URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
-                .map(ServerResponse::created)
-                .flatMap(ServerResponse.HeadersBuilder::build), serverRequest, CategoryDto.class);
+        return serverRequest.bodyToMono(CategoryDto.class)
+                .map(categoryService::create)
+                .flatMap(createdCategory -> ServerResponse.created(URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
+                        .bodyValue(createdCategory));
+
     }
 
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
