@@ -2,7 +2,7 @@ package com.augusto.backend.resource.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class WebException {
+public class WebException extends Exception {
 
     private HttpStatus httpStatus;
     private String message;
