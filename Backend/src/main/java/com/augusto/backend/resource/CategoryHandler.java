@@ -45,7 +45,9 @@ public class CategoryHandler {
                 .map(categoryService::create)
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
-                        .bodyValue(createdCategory));
+                        .bodyValue(createdCategory))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                        .bodyValue(e));
 
     }
 
