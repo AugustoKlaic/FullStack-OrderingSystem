@@ -46,8 +46,7 @@ public class CategoryHandler {
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
                         .bodyValue(createdCategory))
-                .onErrorResume(e -> ServerResponse.status(HttpStatus.BAD_REQUEST)
-                        .bodyValue(e));
+                .onErrorResume(this::errorHandler);
 
     }
 
@@ -63,5 +62,9 @@ public class CategoryHandler {
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.BAD_REQUEST)
                         .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
+    }
+
+    private Mono<ServerResponse> errorHandler(final Throwable error) {
+        return ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(new WebException(HttpStatus.BAD_REQUEST, error.getMessage()));
     }
 }
