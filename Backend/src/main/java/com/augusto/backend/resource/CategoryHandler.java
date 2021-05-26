@@ -2,10 +2,11 @@ package com.augusto.backend.resource;
 
 import com.augusto.backend.domain.Category;
 import com.augusto.backend.dto.CategoryDto;
+import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.RequestValidator;
+import com.augusto.backend.resource.validator.ValidatorException;
 import com.augusto.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -45,7 +46,8 @@ public class CategoryHandler {
                 .map(categoryService::create)
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
-                        .bodyValue(createdCategory));
+                        .bodyValue(createdCategory))
+                .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
@@ -56,5 +58,13 @@ public class CategoryHandler {
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId));
+    }
+
+    public Mono<ServerResponse> errorHandler(Throwable error) {
+        if (error instanceof ValidatorException) {
+            return ServerResponse.unprocessableEntity().bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
+        } else {
+            return ServerResponse.badRequest().build();
+        }
     }
 }

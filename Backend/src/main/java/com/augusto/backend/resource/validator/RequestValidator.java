@@ -3,9 +3,9 @@ package com.augusto.backend.resource.validator;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,11 +18,15 @@ public class RequestValidator {
     }
 
     public void validateRequest(final Object requestObject) {
-        List<String> validationErrors = this.validator.validate(requestObject)
+        final Class<?> target = requestObject.getClass();
+
+        final List<String> errors = this.validator.validate(requestObject)
                 .stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
 
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException();
+        final Map<String, List<String>> errorMap = Map.of(target.getSimpleName(), errors);
+
+        if (!errors.isEmpty()) {
+            throw new ValidatorException(errorMap);
         }
     }
 }

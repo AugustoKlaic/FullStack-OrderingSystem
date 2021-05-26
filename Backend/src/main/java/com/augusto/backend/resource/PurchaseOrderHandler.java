@@ -1,6 +1,5 @@
 package com.augusto.backend.resource;
 
-import com.augusto.backend.resource.exception.WebException;
 import com.augusto.backend.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,7 @@ public class PurchaseOrderHandler {
         return Mono.fromCallable(() -> purchaseOrderService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(purchaseOrder -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(purchaseOrder))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
-                        .bodyValue(new WebException(HttpStatus.NOT_FOUND, e.getMessage())));
+                        .bodyValue(e));
 
     }
 }
