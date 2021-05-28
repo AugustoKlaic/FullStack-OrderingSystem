@@ -6,8 +6,8 @@ import com.augusto.backend.repository.CategoryRepository;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +21,9 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<CategoryDto> findAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(category -> new CategoryDto(category.getId(), category.getName())).collect(Collectors.toList());
+    @Transactional
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
     }
 
     public Category findById(final Integer id) {

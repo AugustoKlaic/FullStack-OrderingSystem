@@ -2,6 +2,8 @@ package com.augusto.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,8 +22,8 @@ public class Product {
     @ManyToMany
     @JsonIgnore
     @JoinTable(name = "product_category",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
+            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id", referencedColumnName = "id")})
     private List<Category> categoryList;
 
     @OneToMany(mappedBy = "id.product")
