@@ -2,15 +2,15 @@ package com.augusto.backend.dto;
 
 import com.augusto.backend.domain.Product;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 public class CategoryDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Name cannot be empty")
+    @NotBlank(message = "Name cannot be empty")
     @Length(min = 5, max = 80, message = "Length must be between 5 and 80 characters")
     private String name;
 

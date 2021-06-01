@@ -1,6 +1,5 @@
 package com.augusto.backend.resource;
 
-import com.augusto.backend.domain.Category;
 import com.augusto.backend.dto.CategoryDto;
 import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.RequestValidator;
