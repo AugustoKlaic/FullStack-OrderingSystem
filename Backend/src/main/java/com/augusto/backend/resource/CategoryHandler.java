@@ -54,7 +54,7 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(Category.class)
+        return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
                 .map(categoryService::update)
                 .flatMap(updatedCategory -> ServerResponse.ok()

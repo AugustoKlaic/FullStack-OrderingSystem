@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -36,10 +35,10 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category update(final Category category) {
-        final Category updateCategory = findById(category.getId());
-        updateCategory.setName(category.getName());
-        return categoryRepository.save(updateCategory);
+    public Category update(final CategoryDto categoryDto) {
+        final Category toUpdateCategory = findById(categoryDto.getId());
+        toUpdateCategory.setName(categoryDto.getName());
+        return categoryRepository.save(toUpdateCategory);
     }
 
     @Transactional
