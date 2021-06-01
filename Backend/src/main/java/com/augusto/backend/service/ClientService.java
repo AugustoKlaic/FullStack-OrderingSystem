@@ -6,6 +6,8 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClientService {
 
@@ -14,6 +16,10 @@ public class ClientService {
     @Autowired
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
+    }
+
+    public List<Client> findAllClients(){
+        return clientRepository.findAll();
     }
 
     public Client findById(final Integer id) {

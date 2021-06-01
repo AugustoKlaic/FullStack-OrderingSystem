@@ -28,7 +28,6 @@ public class CategoryHandler {
         this.requestValidator = requestValidator;
     }
 
-    @Transactional
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
         return Mono.fromCallable(categoryService::findAllCategories)
                 .flatMap(categories -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
