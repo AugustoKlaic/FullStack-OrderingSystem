@@ -38,8 +38,7 @@ public class CategoryHandler {
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
-                .switchIfEmpty(ServerResponse.notFound().build());
-
+                .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
