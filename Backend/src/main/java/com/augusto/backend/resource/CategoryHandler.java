@@ -5,6 +5,7 @@ import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.RequestValidator;
 import com.augusto.backend.resource.validator.ValidatorException;
 import com.augusto.backend.service.CategoryService;
+import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -62,14 +63,18 @@ public class CategoryHandler {
 
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
-                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId));
+                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
+                .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> errorHandler(Throwable error) {
         if (error instanceof ValidatorException) {
             return ServerResponse.unprocessableEntity()
                     .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
-        } else {
+        } else if (error instanceof ObjectNotFoundException) {
+            return ServerResponse.notFound().build();
+        }
+        else {
             return ServerResponse.badRequest().build();
         }
     }
