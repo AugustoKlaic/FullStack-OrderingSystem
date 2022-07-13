@@ -9,12 +9,12 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.stream.Collectors;
 
 @Component
 public class CategoryHandler {
@@ -30,13 +30,14 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
-        return Mono.fromCallable(categoryService::findAllCategories)
+        return categoryService.findAllCategories()
+                .collect(Collectors.toList())
                 .flatMap(categories -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(categories));
     }
 
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
-        return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
+        return categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id")))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
                 .onErrorResume(this::errorHandler);
     }
@@ -44,7 +45,7 @@ public class CategoryHandler {
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .map(categoryService::create)
+                .flatMap(categoryService::create)
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
                         .bodyValue(createdCategory))
@@ -54,14 +55,14 @@ public class CategoryHandler {
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .map(categoryService::update)
+                .flatMap(categoryService::update)
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
                 .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
-        return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
+        return categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id")))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
                 .onErrorResume(this::errorHandler);
     }
@@ -72,8 +73,7 @@ public class CategoryHandler {
                     .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
         } else if (error instanceof ObjectNotFoundException) {
             return ServerResponse.notFound().build();
-        }
-        else {
+        } else {
             return ServerResponse.badRequest().build();
         }
     }
