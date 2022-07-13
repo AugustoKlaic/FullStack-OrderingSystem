@@ -7,8 +7,9 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,34 +21,35 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Transactional
-    public List<Category> findAllCategories() {
+    public Flux<Category> findAllCategories() {
         return categoryRepository.findAll();
     }
 
-    public Category findById(final Integer id) {
+    public Mono<Category> findById(final Integer id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
+                .switchIfEmpty(Mono.error(new ObjectNotFoundException("Category not found for Id: " + id)));
     }
 
-    public Category create(final CategoryDto categoryDto) {
+    public Mono<Category> create(final CategoryDto categoryDto) {
         return categoryRepository.save(toDomainObject(categoryDto));
     }
 
     @Transactional
-    public Category update(final CategoryDto categoryDto) {
-        final Category toUpdateCategory = findById(categoryDto.getId());
-        toUpdateCategory.setName(categoryDto.getName());
-        return categoryRepository.save(toUpdateCategory);
+    public Mono<Category> update(final CategoryDto categoryDto) {
+        return findById(categoryDto.getId())
+                .flatMap(foundCategory -> {
+                    foundCategory.setName(categoryDto.getName());
+                    return categoryRepository.save(foundCategory);
+                });
     }
 
     @Transactional
-    public Integer deleteById(final Integer id) {
-        categoryRepository.deleteById(findById(id).getId());
-        return id;
+    public Mono<Integer> deleteById(final Integer id) {
+        return categoryRepository.deleteById(id)
+                .thenReturn(id);
     }
 
     private Category toDomainObject(final CategoryDto categoryDto) {
-        return new Category(categoryDto.getId(), categoryDto.getName(), new ArrayList<>());
+        return new Category(categoryDto.getId(), categoryDto.getName(), List.of());
     }
 }
