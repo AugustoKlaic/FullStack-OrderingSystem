@@ -10,7 +10,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @SpringBootApplication
 public class ApplicationMain implements CommandLineRunner {
@@ -48,12 +51,12 @@ public class ApplicationMain implements CommandLineRunner {
 
         // insertion of category and product
 
-        Category category1 = new Category(null, "Informatics", List.of());
-        Category category2 = new Category(null, "Office", List.of());
+        Category category1 = new Category(null, "Informatics", new ArrayList<>());
+        Category category2 = new Category(null, "Office", new ArrayList<>());
 
-        Product product1 = new Product(null, "Computer", 2000.00, List.of(), Set.of());
-        Product product2 = new Product(null, "Printer", 800.00, List.of(), Set.of());
-        Product product3 = new Product(null, "Mouse", 80.00, List.of(), Set.of());
+        Product product1 = new Product(null, "Computer", 2000.00, new ArrayList<>(), new HashSet<>());
+        Product product2 = new Product(null, "Printer", 800.00, new ArrayList<>(), new HashSet<>());
+        Product product3 = new Product(null, "Mouse", 80.00, new ArrayList<>(), new HashSet<>());
 
         category1.getProductList().addAll(Arrays.asList(product1, product2, product3));
         category2.getProductList().add(product2);
@@ -67,8 +70,8 @@ public class ApplicationMain implements CommandLineRunner {
 
         // insertion of state and city
 
-        State state1 = new State(null, "Minas Gerais", List.of());
-        State state2 = new State(null, "Sao Paulo", List.of());
+        State state1 = new State(null, "Minas Gerais", new ArrayList<>());
+        State state2 = new State(null, "Sao Paulo", new ArrayList<>());
 
         City city1 = new City(null, "Uberlandia", state1);
         City city2 = new City(null, "Sao Paulo", state2);
@@ -83,7 +86,7 @@ public class ApplicationMain implements CommandLineRunner {
         // insertion of address, client and telephone
 
         Client client1 = new Client(null, "Maria Silva", "maria@gmail.com", "86101153053",
-                ClientTypeEnum.LEGAL_PERSON, Set.of(), Set.of("33401041", "97330690"), List.of());
+                ClientTypeEnum.LEGAL_PERSON, new HashSet<>(), Set.of("33401041", "97330690"), new ArrayList<>());
 
         Address address1 = new Address(null, "Rua flores", "300", "Apto 202", "Jardim", "91380240", city1, client1);
         Address address2 = new Address(null, "Avenida Matos", "105", "Sala 800", "Centro", "91240380", city2, client1);
@@ -96,8 +99,8 @@ public class ApplicationMain implements CommandLineRunner {
         // insertion of purchaseOrders and payments
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        PurchaseOrder purchaseOrder1 = new PurchaseOrder(null, sdf.parse("30/09/2020 10:30"), null, client1, address1, Set.of());
-        PurchaseOrder purchaseOrder2 = new PurchaseOrder(null, sdf.parse("10/10/2020 19:37"), null, client1, address2, Set.of());
+        PurchaseOrder purchaseOrder1 = new PurchaseOrder(null, sdf.parse("30/09/2020 10:30"), null, client1, address1, new HashSet<>());
+        PurchaseOrder purchaseOrder2 = new PurchaseOrder(null, sdf.parse("10/10/2020 19:37"), null, client1, address2, new HashSet<>());
 
         Payment creditCardPayment = new CreditCardPayment(null, PaymentStateEnum.SETTLED, purchaseOrder1, 6);
         Payment billetPayment = new BilletPayment(null, PaymentStateEnum.PENDING, purchaseOrder2, sdf.parse("20/10/2020 00:00"), null);
