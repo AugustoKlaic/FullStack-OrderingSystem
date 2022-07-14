@@ -14,7 +14,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.stream.Collectors;
 
 @Component
 public class CategoryHandler {
@@ -30,14 +29,13 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> getCategories(ServerRequest serverRequest) {
-        return categoryService.findAllCategories()
-                .collect(Collectors.toList())
+        return Mono.fromCallable(categoryService::findAllCategories)
                 .flatMap(categories -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(categories));
     }
 
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
-        return categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id")))
+        return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
                 .onErrorResume(this::errorHandler);
     }
@@ -45,7 +43,7 @@ public class CategoryHandler {
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .flatMap(categoryService::create)
+                .map(categoryService::create)
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
                         .bodyValue(createdCategory))
@@ -55,14 +53,14 @@ public class CategoryHandler {
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .flatMap(categoryService::update)
+                .map(categoryService::update)
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
                 .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
-        return categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id")))
+        return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
                 .onErrorResume(this::errorHandler);
     }
