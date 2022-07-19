@@ -32,7 +32,9 @@ public class Client {
     public Client() {
     }
 
-    public Client(Integer id, String name, String email, String nationalIdentity, ClientTypeEnum clientType, Set<Address> addresses, Set<String> telephones, List<PurchaseOrder> purchaseOrders) {
+    public Client(Integer id, String name, String email, String nationalIdentity,
+                  ClientTypeEnum clientType, Set<Address> addresses, Set<String> telephones,
+                  List<PurchaseOrder> purchaseOrders) {
         this();
         this.id = id;
         this.name = name;
@@ -42,6 +44,13 @@ public class Client {
         this.addresses = addresses;
         this.telephones = telephones;
         this.purchaseOrders = purchaseOrders;
+    }
+
+    public Client(Integer id, String name, String email) {
+        this();
+        this.id = id;
+        this.name = name;
+        this.email = email;
     }
 
     public Integer getId() {

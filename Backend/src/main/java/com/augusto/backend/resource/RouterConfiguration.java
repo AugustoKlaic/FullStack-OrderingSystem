@@ -29,7 +29,9 @@ public class RouterConfiguration {
         return route().path("/clients", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", clientHandler::getClients)
-                        .GET("/{id}", clientHandler::getClientById)))
+                        .GET("/{id}", clientHandler::getClientById))
+                        .PUT("", clientHandler::updateClient)
+                        .DELETE("/{id}", clientHandler::deleteClientById))
                 .build();
     }
 

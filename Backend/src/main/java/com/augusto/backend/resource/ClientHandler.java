@@ -1,9 +1,13 @@
 package com.augusto.backend.resource;
 
+import com.augusto.backend.dto.ClientDto;
 import com.augusto.backend.resource.validator.ErrorClass;
+import com.augusto.backend.resource.validator.RequestValidator;
 import com.augusto.backend.resource.validator.ValidatorException;
 import com.augusto.backend.service.ClientService;
+import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -13,11 +17,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class ClientHandler {
 
+    private static final String CLIENT_URI = "/client/";
+    private static final String CLIENT_DOMAIN = "Client";
+
     private final ClientService clientService;
+    private final RequestValidator requestValidator;
 
     @Autowired
-    public ClientHandler(ClientService clientService) {
+    public ClientHandler(ClientService clientService, RequestValidator requestValidator) {
         this.clientService = clientService;
+        this.requestValidator = requestValidator;
     }
 
     public Mono<ServerResponse> getClients(ServerRequest serverRequest) {
@@ -32,10 +41,30 @@ public class ClientHandler {
                 .onErrorResume(this::errorHandler);
     }
 
+    public Mono<ServerResponse> updateClient(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(ClientDto.class)
+                .doOnNext(requestValidator::validateRequest)
+                .map(clientService::update)
+                .flatMap(updatedCategory -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
+                .onErrorResume(this::errorHandler);
+    }
+
+    public Mono<ServerResponse> deleteClientById(ServerRequest serverRequest) {
+        return Mono.fromCallable(() -> clientService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
+                .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
+                .onErrorResume(this::errorHandler);
+    }
+
     public Mono<ServerResponse> errorHandler(Throwable error) {
         if (error instanceof ValidatorException) {
             return ServerResponse.unprocessableEntity()
                     .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
+        } else if (error instanceof ObjectNotFoundException) {
+            return ServerResponse.notFound().build();
+        } else if (error instanceof DataIntegrityViolationException){
+            return ServerResponse.unprocessableEntity()
+                    .bodyValue(new ErrorClass(CLIENT_DOMAIN, error.getMessage()));
         } else {
             return ServerResponse.badRequest().build();
         }

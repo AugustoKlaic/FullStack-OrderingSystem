@@ -11,6 +11,10 @@ public class ErrorClass {
         this.reasons = reasons;
     }
 
+    public ErrorClass(String clazz, String error) {
+        this.reasons = Map.of(clazz, List.of(error));
+    }
+
     public Map<String, List<String>> getReasons() {
         return reasons;
     }
