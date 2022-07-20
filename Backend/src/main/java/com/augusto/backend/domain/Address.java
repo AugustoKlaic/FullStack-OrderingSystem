@@ -28,9 +28,8 @@ public class Address {
     public Address() {
     }
 
-    public Address(Integer id, String street, String number, String complement, String neighborhood, String cep, City city, Client client) {
+    public Address(String street, String number, String complement, String neighborhood, String cep, City city, Client client) {
         this();
-        this.id = id;
         this.street = street;
         this.number = number;
         this.complement = complement;
@@ -38,6 +37,15 @@ public class Address {
         this.cep = cep;
         this.city = city;
         this.client = client;
+    }
+
+    public Address(String street, String number, String complement, String neighborhood, String cep) {
+        this();
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
+        this.neighborhood = neighborhood;
+        this.cep = cep;
     }
 
     public Integer getId() {

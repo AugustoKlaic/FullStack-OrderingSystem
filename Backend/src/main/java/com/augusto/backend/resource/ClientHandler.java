@@ -1,6 +1,7 @@
 package com.augusto.backend.resource;
 
 import com.augusto.backend.dto.ClientDto;
+import com.augusto.backend.dto.CompleteClientDto;
 import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.RequestValidator;
 import com.augusto.backend.resource.validator.ValidatorException;
@@ -40,6 +41,16 @@ public class ClientHandler {
                 .flatMap(client -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(client))
                 .onErrorResume(this::errorHandler);
     }
+
+    public Mono<ServerResponse> createClient(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(CompleteClientDto.class)
+                .doOnNext(requestValidator::validateRequest)
+                .map(clientService::create)
+                .flatMap(updatedCategory -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
+                .onErrorResume(this::errorHandler);
+    }
+
 
     public Mono<ServerResponse> updateClient(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ClientDto.class)
