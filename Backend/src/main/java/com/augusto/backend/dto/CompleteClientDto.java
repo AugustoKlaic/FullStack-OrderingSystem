@@ -16,17 +16,6 @@ public class CompleteClientDto {
     public CompleteClientDto() {
     }
 
-    public CompleteClientDto(String name, String email, String nationalIdentity,
-                             ClientTypeEnum clientType, AddressDto address, Set<String> telephones) {
-        this();
-        this.name = name;
-        this.email = email;
-        this.nationalIdentity = nationalIdentity;
-        this.clientType = clientType;
-        this.address = address;
-        this.telephones = telephones;
-    }
-
     public String getName() {
         return name;
     }

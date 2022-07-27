@@ -86,12 +86,12 @@ public class ApplicationMain implements CommandLineRunner {
         // insertion of address, client and telephone
 
         Client client1 = new Client( "Maria Silva", "maria@gmail.com", "86101153053",
-                ClientTypeEnum.LEGAL_PERSON, new HashSet<>(), Set.of("33401041", "97330690"), new ArrayList<>());
+                ClientTypeEnum.LEGAL_PERSON, Set.of("33401041", "97330690"), new ArrayList<>());
 
         Address address1 = new Address("Rua flores", "300", "Apto 202", "Jardim", "91380240", city1, client1);
         Address address2 = new Address("Avenida Matos", "105", "Sala 800", "Centro", "91240380", city2, client1);
 
-        client1.getAddresses().addAll(Arrays.asList(address1, address2));
+        client1.setAddresses(Set.of(address1, address2));
 
         clientRepository.save(client1);
         addressRespository.saveAll(Arrays.asList(address1, address2));

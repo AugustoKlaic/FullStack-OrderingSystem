@@ -33,14 +33,13 @@ public class Client {
     }
 
     public Client(String name, String email, String nationalIdentity,
-                  ClientTypeEnum clientType, Set<Address> addresses, Set<String> telephones,
+                  ClientTypeEnum clientType, Set<String> telephones,
                   List<PurchaseOrder> purchaseOrders) {
         this();
         this.name = name;
         this.email = email;
         this.nationalIdentity = nationalIdentity;
         this.clientType = clientType;
-        this.addresses = addresses;
         this.telephones = telephones;
         this.purchaseOrders = purchaseOrders;
     }

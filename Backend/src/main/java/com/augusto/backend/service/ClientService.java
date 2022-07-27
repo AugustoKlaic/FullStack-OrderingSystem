@@ -1,12 +1,12 @@
 package com.augusto.backend.service;
 
 import com.augusto.backend.domain.Address;
-import com.augusto.backend.domain.Category;
 import com.augusto.backend.domain.Client;
 import com.augusto.backend.dto.AddressDto;
-import com.augusto.backend.dto.CategoryDto;
 import com.augusto.backend.dto.ClientDto;
 import com.augusto.backend.dto.CompleteClientDto;
+import com.augusto.backend.repository.AddressRespository;
+import com.augusto.backend.repository.CityRepository;
 import com.augusto.backend.repository.ClientRepository;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,14 @@ import java.util.Set;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+    private final AddressRespository addressRespository;
+    private final CityRepository cityRepository;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository, CityRepository cityRepository) {
         this.clientRepository = clientRepository;
+        this.addressRespository = addressRespository;
+        this.cityRepository = cityRepository;
     }
 
     public List<Client> findAllClients() {
@@ -37,7 +41,15 @@ public class ClientService {
 
     @Transactional
     public Client create(final CompleteClientDto client) {
-        return clientRepository.save(toDomainObject(client));
+        Client clientSaved = clientRepository.save(toDomainObject(client));
+
+        Address addressToBeSaved = toDomainObject(client.getAddress());
+        addressToBeSaved.setClient(clientSaved);
+        addressToBeSaved.setCity(cityRepository.findById(client.getAddress().getCityCode())
+                .orElseThrow(() -> new ObjectNotFoundException("Client not found for Id: " + client.getAddress().getCityCode())));
+        clientSaved.setAddresses(Set.of(addressRespository.save(addressToBeSaved)));
+
+        return clientSaved;
     }
 
     @Transactional
@@ -59,7 +71,6 @@ public class ClientService {
                 clientDto.getEmail(),
                 clientDto.getNationalIdentity(),
                 clientDto.getClientType(),
-                Set.of(toDomainObject(clientDto.getAddress())),
                 clientDto.getTelephones(),
                 List.of());
     }
