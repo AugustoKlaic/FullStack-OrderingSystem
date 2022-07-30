@@ -1,12 +1,20 @@
 package com.augusto.backend.dto;
 
 import com.augusto.backend.domain.enums.ClientTypeEnum;
+import com.augusto.backend.resource.validator.ClientInfo;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
+@ClientInfo
 public class CompleteClientDto {
 
+    @NotEmpty(message = "name cannot be empty")
     private String name;
+
+    @NotEmpty(message = "email cannot be empty")
+    @Email(message = "invalid email")
     private String email;
     private String nationalIdentity;
     private ClientTypeEnum clientType;

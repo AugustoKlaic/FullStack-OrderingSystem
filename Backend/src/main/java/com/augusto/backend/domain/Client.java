@@ -18,7 +18,7 @@ public class Client {
     private String nationalIdentity;
     private ClientTypeEnum clientType;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Address> addresses;
 
     @ElementCollection
