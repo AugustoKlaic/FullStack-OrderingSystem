@@ -14,6 +14,8 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+
+    @Column(unique = true)
     private String email;
     private String nationalIdentity;
     private ClientTypeEnum clientType;

@@ -17,4 +17,7 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     @Query("select distinct c from Client c join fetch c.addresses join fetch c.telephones")
     public List<Client> findAll();
+
+    @Query("select email from Client where email like :email")
+    public Optional<String> findAlreadyInsertedEmail(@Param("email") String email);
 }
