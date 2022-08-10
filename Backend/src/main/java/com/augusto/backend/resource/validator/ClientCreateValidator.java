@@ -9,16 +9,16 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientValidator implements ConstraintValidator<ClientInfo, CompleteClientDto> {
+public class ClientCreateValidator implements ConstraintValidator<ClientCreate, CompleteClientDto> {
 
     private final ClientRepository clientRepository;
 
-    public ClientValidator(ClientRepository clientRepository) {
+    public ClientCreateValidator(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
     @Override
-    public void initialize(ClientInfo constraintAnnotation) {
+    public void initialize(ClientCreate constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
@@ -29,7 +29,6 @@ public class ClientValidator implements ConstraintValidator<ClientInfo, Complete
         if (ClientTypeEnum.LEGAL_PERSON.equals(value.getClientType()) && !isValidCNPJ(value.getNationalIdentity())) {
             errors.add("CNPJ is invalid.");
         }
-
 
         if (ClientTypeEnum.PHYSIC_PERSON.equals(value.getClientType()) && !isValidCPF(value.getNationalIdentity())) {
             errors.add("CPF is invalid.");

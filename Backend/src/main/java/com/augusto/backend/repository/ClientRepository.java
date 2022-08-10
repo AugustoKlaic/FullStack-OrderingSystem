@@ -20,4 +20,8 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     @Query("select email from Client where email like :email")
     public Optional<String> findAlreadyInsertedEmail(@Param("email") String email);
+
+    @Query("select email from Client where email like :email and id <> :id")
+    public Optional<String> findAlreadyInsertedEmail(@Param("email") String email,
+                                                     @Param("id") Integer id);
 }

@@ -7,10 +7,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = ClientValidator.class)
+@Constraint(validatedBy = ClientCreateValidator.class)
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClientInfo {
+public @interface ClientCreate {
     String message() default "Invalid Client data.";
 
     Class<?>[] groups() default {};

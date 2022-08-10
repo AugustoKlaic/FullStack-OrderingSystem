@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class ClientService {
@@ -53,8 +54,8 @@ public class ClientService {
     }
 
     @Transactional
-    public Client update(final ClientDto clientDto) {
-        final Client toUpdateClient = findById(clientDto.getId());
+    public Client update(final ClientDto clientDto, final Integer id) {
+        final Client toUpdateClient = findById(id);
         toUpdateClient.setName(clientDto.getName());
         toUpdateClient.setEmail(clientDto.getEmail());
         return clientRepository.save(toUpdateClient);

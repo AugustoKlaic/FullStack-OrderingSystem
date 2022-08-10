@@ -51,11 +51,12 @@ public class ClientHandler {
                 .onErrorResume(this::errorHandler);
     }
 
-
     public Mono<ServerResponse> updateClient(ServerRequest serverRequest) {
+        Integer clientId = Integer.parseInt(serverRequest.pathVariable("id"));
+
         return serverRequest.bodyToMono(ClientDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .map(clientService::update)
+                .map(client -> clientService.update(client, clientId))
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
                 .onErrorResume(this::errorHandler);

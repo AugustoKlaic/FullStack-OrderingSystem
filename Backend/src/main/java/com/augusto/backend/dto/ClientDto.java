@@ -1,11 +1,12 @@
 package com.augusto.backend.dto;
 
+import com.augusto.backend.resource.validator.ClientUpdate;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+@ClientUpdate
 public class ClientDto {
-
-    private Integer id;
 
     @NotEmpty(message = "name cannot be empty")
     private String name;
@@ -15,14 +16,6 @@ public class ClientDto {
     private String email;
 
     public ClientDto() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
