@@ -8,14 +8,16 @@ import com.augusto.backend.dto.CompleteClientDto;
 import com.augusto.backend.repository.AddressRespository;
 import com.augusto.backend.repository.CityRepository;
 import com.augusto.backend.repository.ClientRepository;
+import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class ClientService {
@@ -47,7 +49,7 @@ public class ClientService {
         Address addressToBeSaved = toDomainObject(client.getAddress());
         addressToBeSaved.setClient(clientSaved);
         addressToBeSaved.setCity(cityRepository.findById(client.getAddress().getCityCode())
-                .orElseThrow(() -> new ObjectNotFoundException("Client not found for Id: " + client.getAddress().getCityCode())));
+                .orElseThrow(() -> new ObjectNotFoundException("City not found for Id: " + client.getAddress().getCityCode())));
         clientSaved.setAddresses(Set.of(addressRespository.save(addressToBeSaved)));
 
         return clientSaved;
@@ -55,6 +57,13 @@ public class ClientService {
 
     @Transactional
     public Client update(final ClientDto clientDto, final Integer id) {
+        clientRepository.findAlreadyInsertedEmail(clientDto.getEmail(), id)
+                .ifPresent(isIllegalEmail -> {
+                    if(isIllegalEmail) {
+                        throw new IllegalObjectException("Email already in use");
+                    }
+                });
+
         final Client toUpdateClient = findById(id);
         toUpdateClient.setName(clientDto.getName());
         toUpdateClient.setEmail(clientDto.getEmail());
@@ -77,6 +86,10 @@ public class ClientService {
     }
 
     private Address toDomainObject(AddressDto address) {
-        return new Address(address.getStreet(), address.getNumber(), address.getComplement(), address.getNeighborhood(), address.getCep());
+        return new Address(address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
+                address.getNeighborhood(),
+                address.getCep());
     }
 }

@@ -6,6 +6,7 @@ import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.RequestValidator;
 import com.augusto.backend.resource.validator.ValidatorException;
 import com.augusto.backend.service.ClientService;
+import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -74,6 +75,9 @@ public class ClientHandler {
                     .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
         } else if (error instanceof ObjectNotFoundException) {
             return ServerResponse.notFound().build();
+        } else if (error instanceof IllegalObjectException) {
+                return ServerResponse.badRequest()
+                        .bodyValue(new ErrorClass(CLIENT_DOMAIN, error.getMessage()));
         } else if (error instanceof DataIntegrityViolationException){
             return ServerResponse.unprocessableEntity()
                     .bodyValue(new ErrorClass(CLIENT_DOMAIN, error.getMessage()));

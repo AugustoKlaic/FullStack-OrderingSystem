@@ -1,11 +1,8 @@
 package com.augusto.backend.dto;
 
-import com.augusto.backend.resource.validator.ClientUpdate;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
-@ClientUpdate
 public class ClientDto {
 
     @NotEmpty(message = "name cannot be empty")

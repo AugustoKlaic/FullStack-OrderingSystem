@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ClientCreate {
-    String message() default "Invalid Client data.";
+    String message() default "Invalid create Client data.";
 
     Class<?>[] groups() default {};
 
