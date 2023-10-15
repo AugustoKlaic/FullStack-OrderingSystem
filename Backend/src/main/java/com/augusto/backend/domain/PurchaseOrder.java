@@ -44,6 +44,12 @@ public class PurchaseOrder {
         this.items = items;
     }
 
+    public Double getTotalOrderPrice() {
+        return this.items.stream()
+                .map(PurchaseOrderItem::getOrderSubTotal)
+                .reduce(0.00, Double::sum);
+    }
+
     public Integer getId() {
         return id;
     }

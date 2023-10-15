@@ -28,6 +28,10 @@ public class PurchaseOrderItem {
         this.price = price;
     }
 
+    public Double getOrderSubTotal() {
+        return (price - discount) * quantity;
+    }
+
     @JsonIgnore
     public PurchaseOrder getPurchaseOrder() {
         return id.getPurchaseOrder();
