@@ -3,6 +3,7 @@ package com.augusto.backend.resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -42,6 +43,15 @@ public class RouterConfiguration {
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", purchaseOrderHandler::getClients)
                         .GET("/{id}", purchaseOrderHandler::getPurchaseOrderById)))
+                .build();
+    }
+    @Bean
+    public RouterFunction<ServerResponse> productRouter(ProductHandler productHandler) {
+        return route().path("/products/search", builder -> builder
+                        .GET("", productHandler::searchProducts))
+                .nest(RequestPredicates.path("/products"), uriBuilder -> uriBuilder
+                        .GET("", productHandler::getProducts)
+                        .GET("/{id}", productHandler::getProductsById))
                 .build();
     }
 }

@@ -10,10 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication
 public class ApplicationMain implements CommandLineRunner {
@@ -53,20 +50,46 @@ public class ApplicationMain implements CommandLineRunner {
 
         Category category1 = new Category(null, "Informatics", new ArrayList<>());
         Category category2 = new Category(null, "Office", new ArrayList<>());
+        Category category3 = new Category(null, "Household linen", new ArrayList<>());
+        Category category4 = new Category(null, "Electronics", new ArrayList<>());
+        Category category5 = new Category(null, "Gardening", new ArrayList<>());
+        Category category6 = new Category(null, "Decoration", new ArrayList<>());
+        Category category7 = new Category(null, "Perfumery", new ArrayList<>());
 
         Product product1 = new Product(null, "Computer", 2000.00, new ArrayList<>(), new HashSet<>());
         Product product2 = new Product(null, "Printer", 800.00, new ArrayList<>(), new HashSet<>());
         Product product3 = new Product(null, "Mouse", 80.00, new ArrayList<>(), new HashSet<>());
+        Product product4 = new Product(null, "Office table", 300.00, new ArrayList<>(), new HashSet<>());
+        Product product5 = new Product(null, "Towel", 50.00, new ArrayList<>(), new HashSet<>());
+        Product product6 = new Product(null, "Quilt", 200.00, new ArrayList<>(), new HashSet<>());
+        Product product7 = new Product(null, "True color TV", 1200.00, new ArrayList<>(), new HashSet<>());
+        Product product8 = new Product(null, "Brush cutter", 800.00, new ArrayList<>(), new HashSet<>());
+        Product product9 = new Product(null, "Lampshade", 100.00, new ArrayList<>(), new HashSet<>());
+        Product product10 = new Product(null, "Pending", 180.00, new ArrayList<>(), new HashSet<>());
+        Product product11 = new Product(null, "Shampoo", 90.00, new ArrayList<>(), new HashSet<>());
 
-        category1.getProductList().addAll(Arrays.asList(product1, product2, product3));
-        category2.getProductList().add(product2);
+        category1.getProductList().addAll(List.of(product1, product2, product3));
+        category2.getProductList().addAll(List.of(product2, product4));
+        category3.getProductList().addAll(List.of(product5, product6));
+        category4.getProductList().addAll(List.of(product1, product2, product3, product7));
+        category5.getProductList().add(product8);
+        category6.getProductList().addAll(List.of(product9, product10));
+        category6.getProductList().add(product11);
 
-        product1.getCategoryList().add(category1);
-        product2.getCategoryList().addAll(Arrays.asList(category1, category2));
-        product3.getCategoryList().add(category1);
+        product1.getCategoryList().addAll(List.of(category1, category4));
+        product2.getCategoryList().addAll(List.of(category1, category2, category4));
+        product3.getCategoryList().addAll(List.of(category1, category4));
+        product4.getCategoryList().add(category2);
+        product5.getCategoryList().add(category3);
+        product6.getCategoryList().add(category3);
+        product7.getCategoryList().add(category4);
+        product8.getCategoryList().add(category5);
+        product9.getCategoryList().add(category6);
+        product10.getCategoryList().add(category6);
+        product11.getCategoryList().add(category7);
 
-        categoryRepository.saveAll(Arrays.asList(category1, category2));
-        productRepository.saveAll(Arrays.asList(product1, product2, product3));
+        categoryRepository.saveAll(Arrays.asList(category1, category2, category3, category4, category5, category6, category7));
+        productRepository.saveAll(Arrays.asList(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11));
 
         // insertion of state and city
 
