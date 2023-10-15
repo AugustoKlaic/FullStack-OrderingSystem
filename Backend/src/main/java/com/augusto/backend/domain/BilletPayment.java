@@ -2,11 +2,13 @@ package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import javax.persistence.Entity;
 import java.util.Date;
 
 @Entity
+@JsonTypeName("billetPayment")
 public class BilletPayment extends Payment {
 
     @JsonFormat(pattern = "dd/MM/yyyy")

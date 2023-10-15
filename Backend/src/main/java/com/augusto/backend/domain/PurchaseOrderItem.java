@@ -37,8 +37,16 @@ public class PurchaseOrderItem {
         return id.getPurchaseOrder();
     }
 
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        id.setPurchaseOrder(purchaseOrder);
+    }
+
     public Product getProduct() {
         return id.getProduct();
+    }
+
+    public void setProduct(Product product) {
+        id.setProduct(product);
     }
 
     public PurchaseOrderItemId getId() {
