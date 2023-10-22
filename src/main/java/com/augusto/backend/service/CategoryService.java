@@ -19,7 +19,6 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Transactional
     public List<Category> findAllCategories() {
         return categoryRepository.findAll();
     }
@@ -29,6 +28,7 @@ public class CategoryService {
                 .orElseThrow(() -> new ObjectNotFoundException("Category not found for Id: " + id));
     }
 
+    @Transactional
     public Category create(final CategoryDto categoryDto) {
         return categoryRepository.save(toDomainObject(categoryDto));
     }

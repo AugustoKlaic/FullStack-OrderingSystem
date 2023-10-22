@@ -11,6 +11,7 @@ import com.augusto.backend.repository.PurchaseOrderRepository;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -37,6 +38,7 @@ public class PurchaseOrderService {
         return purchaseOrderRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Purchase Order not found for Id: " + id));
     }
 
+    @Transactional
     public PurchaseOrder create(PurchaseOrder purchaseOrder) {
         purchaseOrder.setId(null);
         purchaseOrder.setInstant(new Date());
