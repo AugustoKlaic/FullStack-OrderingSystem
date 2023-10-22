@@ -28,6 +28,4 @@ dependencies {
 
     //hibernate validations
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-
-
 }
