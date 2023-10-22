@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @Entity
 public class PurchaseOrderItem {
@@ -79,5 +81,17 @@ public class PurchaseOrderItem {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getProduct().getName());
+        builder.append(", Quantity: ").append(getQuantity());
+        builder.append(", Price: ").append(numberFormat.format(getPrice()));
+        builder.append(", Subtotal: ").append(numberFormat.format(getOrderSubTotal()));
+        builder.append("\n");
+        return builder.toString();
     }
 }

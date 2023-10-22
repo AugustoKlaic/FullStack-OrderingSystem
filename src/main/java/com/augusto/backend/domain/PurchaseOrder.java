@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 
 @Entity
@@ -96,5 +99,20 @@ public class PurchaseOrder {
 
     public void setItems(Set<PurchaseOrderItem> items) {
         this.items = items;
+    }
+
+    @Override
+    public String toString() {
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Purchase Order number: ").append(getId());
+        sb.append(", date: ").append(simpleDateFormat.format(getInstant()));
+        sb.append(", client name: ").append(getClient().getName());
+        sb.append(", payment status: ").append(getPayment().getPaymentState());
+        sb.append("\ndetails: \n");
+        getItems().forEach(item -> sb.append(item.toString()));
+        sb.append("\nTotal: ").append(numberFormat.format(getTotalOrderPrice()));
+        return sb.toString();
     }
 }

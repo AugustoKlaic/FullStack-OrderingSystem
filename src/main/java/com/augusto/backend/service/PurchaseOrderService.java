@@ -21,17 +21,19 @@ public class PurchaseOrderService {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final BilletPaymentService billetPaymentService;
     private final PaymentRepository paymentRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
+    private final ClientService clientService;
 
     @Autowired
     public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository, BilletPaymentService billetPaymentService,
-                                PaymentRepository paymentRepository, ProductRepository productRepository, PurchaseOrderItemRepository purchaseOrderItemRepository) {
+                                PaymentRepository paymentRepository, ProductService productService, PurchaseOrderItemRepository purchaseOrderItemRepository, ClientService clientService) {
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.billetPaymentService = billetPaymentService;
         this.paymentRepository = paymentRepository;
-        this.productRepository = productRepository;
+        this.productService = productService;
         this.purchaseOrderItemRepository = purchaseOrderItemRepository;
+        this.clientService = clientService;
     }
 
     public PurchaseOrder findById(final Integer id) {
@@ -44,6 +46,7 @@ public class PurchaseOrderService {
         purchaseOrder.setInstant(new Date());
         purchaseOrder.getPayment().setPaymentState(PaymentStateEnum.PENDING);
         purchaseOrder.getPayment().setOrder(purchaseOrder);
+        purchaseOrder.setClient(clientService.findById(purchaseOrder.getClient().getId()));
 
         if (purchaseOrder.getPayment() instanceof BilletPayment) {
             BilletPayment payment = (BilletPayment) purchaseOrder.getPayment();
@@ -54,8 +57,10 @@ public class PurchaseOrderService {
         paymentRepository.save(purchaseOrder.getPayment());
 
         purchaseOrder.getItems().forEach(item -> {
+            Product product = productService.findById(item.getProduct().getId());
             item.setDiscount(0.00);
-            item.setPrice(productRepository.findById(item.getProduct().getId()).map(Product::getPrice).orElse(0.00));
+            item.setProduct(product);
+            item.setPrice(product.getPrice());
             item.setPurchaseOrder(purchaseOrder);
         });
         purchaseOrderItemRepository.saveAll(purchaseOrder.getItems());
