@@ -28,4 +28,7 @@ dependencies {
 
     //hibernate validations
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+    //email
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
 }

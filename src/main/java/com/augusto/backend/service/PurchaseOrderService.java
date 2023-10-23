@@ -5,9 +5,9 @@ import com.augusto.backend.domain.Product;
 import com.augusto.backend.domain.PurchaseOrder;
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 import com.augusto.backend.repository.PaymentRepository;
-import com.augusto.backend.repository.ProductRepository;
 import com.augusto.backend.repository.PurchaseOrderItemRepository;
 import com.augusto.backend.repository.PurchaseOrderRepository;
+import com.augusto.backend.service.email.EmailService;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,19 @@ public class PurchaseOrderService {
     private final ProductService productService;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final ClientService clientService;
+    private final EmailService emailService;
 
     @Autowired
     public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository, BilletPaymentService billetPaymentService,
-                                PaymentRepository paymentRepository, ProductService productService, PurchaseOrderItemRepository purchaseOrderItemRepository, ClientService clientService) {
+                                PaymentRepository paymentRepository, ProductService productService, PurchaseOrderItemRepository purchaseOrderItemRepository,
+                                ClientService clientService, EmailService emailService) {
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.billetPaymentService = billetPaymentService;
         this.paymentRepository = paymentRepository;
         this.productService = productService;
         this.purchaseOrderItemRepository = purchaseOrderItemRepository;
         this.clientService = clientService;
+        this.emailService = emailService;
     }
 
     public PurchaseOrder findById(final Integer id) {
@@ -64,6 +67,7 @@ public class PurchaseOrderService {
             item.setPurchaseOrder(purchaseOrder);
         });
         purchaseOrderItemRepository.saveAll(purchaseOrder.getItems());
+        emailService.sendPurchaseOrderConfirmation(purchaseOrder);
         return savedPurchaseOrder;
     }
 

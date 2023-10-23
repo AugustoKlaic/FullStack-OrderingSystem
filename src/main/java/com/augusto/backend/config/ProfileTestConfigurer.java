@@ -1,6 +1,8 @@
 package com.augusto.backend.config;
 
 import com.augusto.backend.config.service.CreateTestDatabase;
+import com.augusto.backend.service.email.EmailService;
+import com.augusto.backend.service.email.MockEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,5 +26,10 @@ public class ProfileTestConfigurer {
 
         createTestDatabase.instantiateTestDatabase();
         return true;
+    }
+
+    @Bean
+    public EmailService emailService() {
+        return new MockEmailService();
     }
 }
