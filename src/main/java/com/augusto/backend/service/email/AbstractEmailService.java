@@ -21,7 +21,7 @@ public abstract class AbstractEmailService implements EmailService {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(purchaseOrder.getClient().getEmail());
         simpleMailMessage.setFrom(this.sender);
-        simpleMailMessage.setSubject("Purchase Order confirmed! Order id: " + purchaseOrder.getId());
+        simpleMailMessage.setSubject("Purchase Order confirmed!\n Order id: " + purchaseOrder.getId());
         simpleMailMessage.setSentDate(new Date(System.currentTimeMillis()));
         simpleMailMessage.setText(purchaseOrder.toString());
         return simpleMailMessage;
