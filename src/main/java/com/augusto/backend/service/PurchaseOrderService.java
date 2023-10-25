@@ -67,7 +67,7 @@ public class PurchaseOrderService {
             item.setPurchaseOrder(purchaseOrder);
         });
         purchaseOrderItemRepository.saveAll(purchaseOrder.getItems());
-        emailService.sendPurchaseOrderConfirmation(purchaseOrder);
+        emailService.sendPurchaseOrderConfirmationHtmlEmail(purchaseOrder);
         return savedPurchaseOrder;
     }
 

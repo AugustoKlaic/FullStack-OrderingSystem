@@ -1,8 +1,6 @@
 package com.augusto.backend.config;
 
 import com.augusto.backend.config.service.CreateTestDatabase;
-import com.augusto.backend.service.email.EmailService;
-import com.augusto.backend.service.email.SMTPEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +33,5 @@ public class ProfileDevConfigurer {
 
         createTestDatabase.instantiateTestDatabase();
         return true;
-    }
-
-    @Bean
-    public EmailService emailService() {
-        return new SMTPEmailService();
     }
 }
