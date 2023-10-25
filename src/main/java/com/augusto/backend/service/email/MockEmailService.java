@@ -3,9 +3,7 @@ package com.augusto.backend.service.email;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 
 import javax.mail.internet.MimeMessage;
 
@@ -13,10 +11,6 @@ import javax.mail.internet.MimeMessage;
 public class MockEmailService extends AbstractEmailService {
 
     private final static Logger logger = LoggerFactory.getLogger(MockEmailService.class);
-
-    public MockEmailService(TemplateEngine templateEngine, JavaMailSender javaMailSender) {
-        super(templateEngine, javaMailSender);
-    }
 
     @Override
     public void sendTextEmail(SimpleMailMessage msg) {

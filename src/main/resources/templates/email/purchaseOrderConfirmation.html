@@ -30,11 +30,11 @@
                         <td th:text="${item.product.name}">name</td>
                         <td th:text="${item.quantity}">quantity</td>
                         <td th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 2, 'COMMA')}">price</td>
-                        <td th:text="${#numbers.formatDecimal(item.subTotal, 0, 'POINT', 2, 'COMMA')}">subTotal</td>
+                        <td th:text="${#numbers.formatDecimal(item.getOrderSubTotal(), 0, 'POINT', 2, 'COMMA')}">subTotal</td>
                     </tr>
                 </table>
                 <p>
-                    Total: <span th:text="${#numbers.formatDecimal(purchaseOrder.getTotalOrderPrice, 0, 'POINT', 2, 'COMMA')}"></span>
+                    Total: <span th:text="${#numbers.formatDecimal(purchaseOrder.getTotalOrderPrice(), 0, 'POINT', 2, 'COMMA')}"></span>
                 </p>
             </div>
         </body>

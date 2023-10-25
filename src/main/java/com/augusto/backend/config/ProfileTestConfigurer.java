@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
 
 import java.text.ParseException;
@@ -17,14 +18,10 @@ import java.text.ParseException;
 public class ProfileTestConfigurer {
 
     private final CreateTestDatabase createTestDatabase;
-    private final TemplateEngine templateEngine;
-    private final JavaMailSender javaMailSender;
 
     @Autowired
-    public ProfileTestConfigurer(CreateTestDatabase createTestDatabase, TemplateEngine templateEngine, JavaMailSender javaMailSender) {
+    public ProfileTestConfigurer(CreateTestDatabase createTestDatabase) {
         this.createTestDatabase = createTestDatabase;
-        this.templateEngine = templateEngine;
-        this.javaMailSender = javaMailSender;
     }
 
     @Bean
@@ -36,6 +33,11 @@ public class ProfileTestConfigurer {
 
     @Bean
     public EmailService emailService() {
-        return new MockEmailService(templateEngine, javaMailSender);
+        return new MockEmailService();
+    }
+
+    @Bean
+    public JavaMailSender javaMailSender() {
+        return new JavaMailSenderImpl();
     }
 }

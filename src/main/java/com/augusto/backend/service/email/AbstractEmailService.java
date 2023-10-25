@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -22,14 +23,11 @@ public abstract class AbstractEmailService implements EmailService {
     @Value("${default.sender}")
     private String sender;
 
-    private final TemplateEngine templateEngine;
-    protected final JavaMailSender javaMailSender;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 
     @Autowired
-    public AbstractEmailService(TemplateEngine templateEngine, JavaMailSender javaMailSender) {
-        this.templateEngine = templateEngine;
-        this.javaMailSender = javaMailSender;
-    }
+    protected JavaMailSender javaMailSender;
 
     @Override
     public void sendPurchaseOrderConfirmationTextEmail(PurchaseOrder purchaseOrder) {

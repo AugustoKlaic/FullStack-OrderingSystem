@@ -32,6 +32,7 @@ dependencies {
     //email
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
     //html for email
-    implementation group: 'org.thymeleaf', name: 'thymeleaf', version: '2.0.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.7.17'
+
 
 }
