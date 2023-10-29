@@ -11,10 +11,9 @@ import com.augusto.backend.repository.ClientRepository;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Set;
@@ -25,12 +24,14 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final AddressRespository addressRespository;
     private final CityRepository cityRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository, CityRepository cityRepository) {
+    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository, CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
         this.addressRespository = addressRespository;
         this.cityRepository = cityRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Client> findAllClients() {
@@ -82,7 +83,8 @@ public class ClientService {
                 clientDto.getNationalIdentity(),
                 clientDto.getClientType(),
                 clientDto.getTelephones(),
-                List.of());
+                List.of(),
+                passwordEncoder.encode(clientDto.getClientPassword()));
     }
 
     private Address toDomainObject(AddressDto address) {

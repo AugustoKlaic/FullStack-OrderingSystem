@@ -16,6 +16,10 @@ public class CompleteClientDto {
     @NotEmpty(message = "email cannot be empty")
     @Email(message = "invalid email")
     private String email;
+
+    @NotEmpty(message = "password cannot be empty")
+    private String clientPassword;
+
     private String nationalIdentity;
     private ClientTypeEnum clientType;
     private AddressDto address;
@@ -70,5 +74,13 @@ public class CompleteClientDto {
 
     public void setTelephones(Set<String> telephones) {
         this.telephones = telephones;
+    }
+
+    public String getClientPassword() {
+        return clientPassword;
+    }
+
+    public void setClientPassword(String clientPassword) {
+        this.clientPassword = clientPassword;
     }
 }

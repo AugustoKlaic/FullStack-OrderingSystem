@@ -5,6 +5,7 @@ import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 import com.augusto.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -23,10 +24,11 @@ public class CreateTestDatabase {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final PaymentRepository paymentRepository;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public CreateTestDatabase(CategoryRepository categoryRepository, ProductRepository productRepository, CityRepository cityRepository,
-                              StateRepository stateRepository, AddressRespository addressRespository, ClientRepository clientRepository, PurchaseOrderRepository purchaseOrderRepository, PaymentRepository paymentRepository, PurchaseOrderItemRepository purchaseOrderItemRepository) {
+                              StateRepository stateRepository, AddressRespository addressRespository, ClientRepository clientRepository, PurchaseOrderRepository purchaseOrderRepository, PaymentRepository paymentRepository, PurchaseOrderItemRepository purchaseOrderItemRepository, BCryptPasswordEncoder passwordEncoder) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.cityRepository = cityRepository;
@@ -36,6 +38,7 @@ public class CreateTestDatabase {
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.paymentRepository = paymentRepository;
         this.purchaseOrderItemRepository = purchaseOrderItemRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void instantiateTestDatabase() throws ParseException {
@@ -102,7 +105,7 @@ public class CreateTestDatabase {
         // insertion of address, client and telephone
 
         Client client1 = new Client("Maria Silva", "maria@gmail.com", "86101153053",
-                ClientTypeEnum.LEGAL_PERSON, Set.of("33401041", "97330690"), new ArrayList<>());
+                ClientTypeEnum.LEGAL_PERSON, Set.of("33401041", "97330690"), new ArrayList<>(), passwordEncoder.encode("strongPassword123"));
 
         Address address1 = new Address("Rua flores", "300", "Apto 202", "Jardim", "91380240", city1, client1);
         Address address2 = new Address("Avenida Matos", "105", "Sala 800", "Centro", "91240380", city2, client1);

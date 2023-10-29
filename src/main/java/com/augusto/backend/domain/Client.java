@@ -20,6 +20,9 @@ public class Client {
     private String nationalIdentity;
     private ClientTypeEnum clientType;
 
+    @JsonIgnore
+    private String clientPassword;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Address> addresses;
 
@@ -36,7 +39,7 @@ public class Client {
 
     public Client(String name, String email, String nationalIdentity,
                   ClientTypeEnum clientType, Set<String> telephones,
-                  List<PurchaseOrder> purchaseOrders) {
+                  List<PurchaseOrder> purchaseOrders, String clientPassword) {
         this();
         this.name = name;
         this.email = email;
@@ -44,6 +47,7 @@ public class Client {
         this.clientType = clientType;
         this.telephones = telephones;
         this.purchaseOrders = purchaseOrders;
+        this.clientPassword = clientPassword;
     }
 
     public Integer getId() {
@@ -108,5 +112,13 @@ public class Client {
 
     public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
         this.purchaseOrders = purchaseOrders;
+    }
+
+    public String getClientPassword() {
+        return clientPassword;
+    }
+
+    public void setClientPassword(String clientPassword) {
+        this.clientPassword = clientPassword;
     }
 }
