@@ -1,6 +1,7 @@
 package com.augusto.backend.config.service;
 
 import com.augusto.backend.domain.*;
+import com.augusto.backend.domain.enums.ClientProfileEnum;
 import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 import com.augusto.backend.repository.*;
@@ -104,16 +105,23 @@ public class CreateTestDatabase {
 
         // insertion of address, client and telephone
 
-        Client client1 = new Client("Maria Silva", "maria@gmail.com", "86101153053",
+        Client client1 = new Client("Maria Silva", "maria@gmail.com", "23500658040",
                 ClientTypeEnum.LEGAL_PERSON, Set.of("33401041", "97330690"), new ArrayList<>(), passwordEncoder.encode("strongPassword123"));
+
+        Client client2 = new Client("Augusto Admin", "admin@gmail.com", "86101153053",
+                ClientTypeEnum.LEGAL_PERSON, Set.of("33401041", "97330690"), new ArrayList<>(), passwordEncoder.encode("strongPassword123"));
+        client2.addClientProfile(ClientProfileEnum.ADMIN);
 
         Address address1 = new Address("Rua flores", "300", "Apto 202", "Jardim", "91380240", city1, client1);
         Address address2 = new Address("Avenida Matos", "105", "Sala 800", "Centro", "91240380", city2, client1);
+        Address address3 = new Address("Avenida Porto Jose", "3233", "Ala b", "Dionisio Mercadante", "91240380", city2, client2);
+
 
         client1.setAddresses(Set.of(address1, address2));
+        client2.setAddresses(Set.of(address3));
 
-        clientRepository.save(client1);
-        addressRespository.saveAll(Arrays.asList(address1, address2));
+        clientRepository.saveAll(List.of(client1, client2));
+        addressRespository.saveAll(List.of(address1, address2, address3));
 
         // insertion of purchaseOrders and payments
 

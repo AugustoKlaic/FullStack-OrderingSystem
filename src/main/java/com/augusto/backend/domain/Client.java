@@ -1,11 +1,14 @@
 package com.augusto.backend.domain;
 
+import com.augusto.backend.domain.enums.ClientProfileEnum;
 import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Client {
@@ -34,7 +37,13 @@ public class Client {
     @JsonIgnore
     private List<PurchaseOrder> purchaseOrders;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "client_profile")
+    private Set<Integer> clientProfiles;
+
     public Client() {
+        this.clientProfiles = new HashSet<>();
+        addClientProfile(ClientProfileEnum.CLIENT);
     }
 
     public Client(String name, String email, String nationalIdentity,
@@ -48,6 +57,8 @@ public class Client {
         this.telephones = telephones;
         this.purchaseOrders = purchaseOrders;
         this.clientPassword = clientPassword;
+        this.clientProfiles = new HashSet<>();
+        addClientProfile(ClientProfileEnum.CLIENT);
     }
 
     public Integer getId() {
@@ -120,5 +131,13 @@ public class Client {
 
     public void setClientPassword(String clientPassword) {
         this.clientPassword = clientPassword;
+    }
+
+    public Set<ClientProfileEnum> getClientProfiles() {
+        return clientProfiles.stream().map(ClientProfileEnum::getEnum).collect(Collectors.toSet());
+    }
+
+    public void addClientProfile(ClientProfileEnum clientProfile) {
+        clientProfiles.add(clientProfile.getCode());
     }
 }
