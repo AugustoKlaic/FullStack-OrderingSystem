@@ -43,6 +43,11 @@ public class ClientService {
                 .orElseThrow(() -> new ObjectNotFoundException("Client not found for Id: " + id));
     }
 
+    public Client findByEmail(String email) {
+        return clientRepository.findByEmail(email)
+                .orElseThrow(() -> new ObjectNotFoundException("Client not found for email: " + email));
+    }
+
     @Transactional
     public Client create(final CompleteClientDto client) {
         Client clientSaved = clientRepository.save(toDomainObject(client));
