@@ -63,6 +63,8 @@ public class SecurityConfig {
 
     @Bean
     public ReactiveAuthenticationManager authenticationManager() {
-        return new UserDetailsRepositoryReactiveAuthenticationManager(userDetailService);
+        UserDetailsRepositoryReactiveAuthenticationManager authManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailService);
+        authManager.setPasswordEncoder(bCryptPasswordEncoder());
+        return authManager;
     }
 }
