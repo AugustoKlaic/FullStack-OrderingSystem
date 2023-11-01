@@ -1,25 +1,23 @@
 package com.augusto.backend.config;
 
+import com.augusto.backend.security.JwtAuthenticationFilter;
+import com.augusto.backend.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Map;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -31,10 +29,12 @@ public class SecurityConfig {
     };
 
     private final ReactiveUserDetailsService userDetailService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public SecurityConfig(ReactiveUserDetailsService userDetailService) {
+    public SecurityConfig(ReactiveUserDetailsService userDetailService, JwtUtil jwtUtil) {
         this.userDetailService = userDetailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .and().cors()
                 .and().csrf().disable() // disables cors and csrf
                 .authenticationManager(authenticationManager())
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtUtil), SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // set session to stateless
 
         return http.build();
