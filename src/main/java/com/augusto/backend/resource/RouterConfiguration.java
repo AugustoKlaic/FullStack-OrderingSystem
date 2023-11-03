@@ -46,6 +46,7 @@ public class RouterConfiguration {
                         .POST("", purchaseOrderHandler::createPurchaseOrder))
                 .build();
     }
+
     @Bean
     public RouterFunction<ServerResponse> productRouter(ProductHandler productHandler) {
         return route().path("/products/search", builder -> builder
@@ -53,6 +54,13 @@ public class RouterConfiguration {
                 .nest(RequestPredicates.path("/products"), uriBuilder -> uriBuilder
                         .GET("", productHandler::getProducts)
                         .GET("/{id}", productHandler::getProductsById))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> securityRouter(SecurityHandler securityHandler) {
+        return route().path("/login", builder -> builder
+                .POST("", securityHandler::login))
                 .build();
     }
 }
