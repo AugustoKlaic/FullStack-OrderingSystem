@@ -26,7 +26,7 @@ public class SecurityService {
         Client client = clientService.findByEmail(email);
 
         if (passwordEncoder.matches(password, client.getClientPassword())) {
-            return jwtUtil.generateToken(client.getEmail());
+            return jwtUtil.generateToken(client);
         } else {
             throw new AuthenticationException("Invalid client password!");
         }

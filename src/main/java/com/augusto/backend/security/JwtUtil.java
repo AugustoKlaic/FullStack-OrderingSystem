@@ -1,5 +1,7 @@
 package com.augusto.backend.security;
 
+import com.augusto.backend.domain.Client;
+import com.augusto.backend.service.exception.AuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -21,48 +23,39 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
 
-    public Mono<VerificationResult> check(String accessToken) {
-        return Mono.just(verify(accessToken)).onErrorResume(e -> Mono.empty());
+    public Mono<String> check(String accessToken) {
+        return Mono.just(verify(accessToken))
+                .onErrorResume(e -> Mono.error(new AuthenticationException("Invalid token")));
     }
 
-    public String generateToken(String email) {
+    public String generateToken(Client client) {
         return Jwts.builder()
-                .subject(email)
+                .subject(client.getEmail())
+                .claim("role", client.getClientProfiles())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(Keys.hmacShaKeyFor(jwtSecretWord.getBytes()))
                 .compact();
     }
 
-    private VerificationResult verify(String token) {
+    private String verify(String token) {
         var claims = getAllClaimsFromToken(token);
         final Date expiration = claims.getExpiration();
 
         if (expiration.before(new Date()))
             throw new RuntimeException("Token expired");
 
-        return new VerificationResult(claims, token);
+        return token;
     }
 
     public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getKey(jwtSecretWord))
                 .build()
-                .parseEncryptedClaims(token)
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
     private SecretKey getKey(String secret) {
-        byte[] secretBytes = Decoders.BASE64URL.decode(secret);
-        return Keys.hmacShaKeyFor(secretBytes);
-    }
-
-    public class VerificationResult {
-        public Claims claims;
-        public String token;
-
-        public VerificationResult(Claims claims, String token) {
-            this.claims = claims;
-            this.token = token;
-        }
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 }
