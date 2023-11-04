@@ -38,6 +38,8 @@ dependencies {
     //token jwt
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.3'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.3'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
     compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 
 }
