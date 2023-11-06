@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -26,8 +27,12 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_MATCHERS_GET = {
             "/products/**",
-            "/categories/**",
-            "/login/**"
+            "/categories/**"
+    };
+
+    private static final String[] PUBLIC_MATCHERS_POST = {
+            "/login/**",
+            "/clients/**"
     };
 
     private final JwtUtil jwtUtil;
@@ -38,12 +43,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, ReactiveAuthenticationManager authenticationManager) {
-        http.authorizeExchange((exchanges) -> exchanges.pathMatchers(PUBLIC_MATCHERS_GET).permitAll())
-                .authorizeExchange().anyExchange().authenticated()
-                .and().cors()
-                .and().csrf().disable() // disables cors and csrf
-                .httpBasic().disable()
-                .formLogin().disable()
+        http.authorizeExchange((exchanges) -> exchanges.pathMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
+                                                       .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+                                                       .anyExchange().authenticated())
+                .cors().disable()
+                .csrf().disable()
                 .addFilterAt(jwtAuthenticationFilter(authenticationManager), SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // set session to stateless
         return http.build();

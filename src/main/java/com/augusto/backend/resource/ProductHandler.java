@@ -28,11 +28,6 @@ public class ProductHandler {
         this.productService = productService;
     }
 
-    public Mono<ServerResponse> getProducts(ServerRequest serverRequest) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.fromCallable(() -> "Rest test"), String.class);
-    }
-
     public Mono<ServerResponse> getProductsById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> productService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(product -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(product))

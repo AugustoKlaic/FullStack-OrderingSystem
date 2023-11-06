@@ -8,6 +8,7 @@ import com.augusto.backend.service.CategoryService;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -40,6 +41,7 @@ public class CategoryHandler {
                 .onErrorResume(this::errorHandler);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> createCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
@@ -50,6 +52,7 @@ public class CategoryHandler {
                 .onErrorResume(this::errorHandler);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
@@ -59,6 +62,7 @@ public class CategoryHandler {
                 .onErrorResume(this::errorHandler);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))

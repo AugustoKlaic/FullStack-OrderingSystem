@@ -41,7 +41,6 @@ public class RouterConfiguration {
     public RouterFunction<ServerResponse> purchaseOrderRouter(PurchaseOrderHandler purchaseOrderHandler) {
         return route().path("/purchase-orders", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
-                        .GET("", purchaseOrderHandler::getPurchaseOrders)
                         .GET("/{id}", purchaseOrderHandler::getPurchaseOrderById))
                         .POST("", purchaseOrderHandler::createPurchaseOrder))
                 .build();
@@ -52,7 +51,6 @@ public class RouterConfiguration {
         return route().path("/products/search", builder -> builder
                         .GET("", productHandler::searchProducts))
                 .nest(RequestPredicates.path("/products"), uriBuilder -> uriBuilder
-                        .GET("", productHandler::getProducts)
                         .GET("/{id}", productHandler::getProductsById))
                 .build();
     }

@@ -26,11 +26,6 @@ public class PurchaseOrderHandler {
         this.purchaseOrderService = purchaseOrderService;
     }
 
-    public Mono<ServerResponse> getPurchaseOrders(ServerRequest serverRequest) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.fromCallable(() -> "Rest test"), String.class);
-    }
-
     public Mono<ServerResponse> getPurchaseOrderById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> purchaseOrderService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(purchaseOrder -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(purchaseOrder))

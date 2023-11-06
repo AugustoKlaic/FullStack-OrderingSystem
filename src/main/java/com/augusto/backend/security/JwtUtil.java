@@ -1,6 +1,7 @@
 package com.augusto.backend.security;
 
 import com.augusto.backend.domain.Client;
+import com.augusto.backend.domain.enums.ClientProfileEnum;
 import com.augusto.backend.service.exception.AuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -31,7 +33,7 @@ public class JwtUtil {
     public String generateToken(Client client) {
         return Jwts.builder()
                 .subject(client.getEmail())
-                .claim("role", client.getClientProfiles())
+                .claim("role", client.getClientProfiles().stream().map(ClientProfileEnum::getDescription).collect(Collectors.toSet()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(Keys.hmacShaKeyFor(jwtSecretWord.getBytes()))
                 .compact();

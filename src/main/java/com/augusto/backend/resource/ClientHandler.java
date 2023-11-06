@@ -11,6 +11,7 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -19,7 +20,6 @@ import reactor.core.publisher.Mono;
 @Component
 public class ClientHandler {
 
-    private static final String CLIENT_URI = "/client/";
     private static final String CLIENT_DOMAIN = "Client";
 
     private final ClientService clientService;
@@ -31,6 +31,7 @@ public class ClientHandler {
         this.requestValidator = requestValidator;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> getClients(ServerRequest serverRequest) {
         return Mono.fromCallable(clientService::findAllClients)
                 .flatMap(clients -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
@@ -63,6 +64,7 @@ public class ClientHandler {
                 .onErrorResume(this::errorHandler);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> deleteClientById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> clientService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
