@@ -46,6 +46,8 @@ public class SecurityConfig {
                                                        .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
                                                        .anyExchange().authenticated())
                 .authenticationManager(authenticationManager)
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .addFilterAt(jwtAuthenticationFilter(authenticationManager), SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // set session to stateless
         return http.build();

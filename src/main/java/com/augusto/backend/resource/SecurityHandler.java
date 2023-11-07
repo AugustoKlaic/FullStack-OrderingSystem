@@ -11,6 +11,8 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class SecurityHandler {
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
 
     private final SecurityService securityService;
 
@@ -23,6 +25,7 @@ public class SecurityHandler {
         return serverRequest.bodyToMono(CredentialsDto.class)
                 .map(credentials -> securityService.authenticate(credentials.getEmail(), credentials.getPassword()))
                 .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                        .header(AUTH_HEADER, (TOKEN_PREFIX + tokenInfo.getToken()))
                         .bodyValue(tokenInfo));
     }
 }
