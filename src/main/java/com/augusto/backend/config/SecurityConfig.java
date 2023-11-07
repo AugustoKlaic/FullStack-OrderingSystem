@@ -1,7 +1,7 @@
 package com.augusto.backend.config;
 
-import com.augusto.backend.security.JwtBearerAuthenticationConverter;
 import com.augusto.backend.security.JwtUtil;
+import com.augusto.backend.security.JwtWebFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,12 +12,11 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.server.WebFilter;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -48,17 +47,14 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(ServerHttpSecurity.CorsSpec::disable)
-                .addFilterAt(jwtAuthenticationFilter(authenticationManager), SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterAt(jwtWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // set session to stateless
         return http.build();
     }
 
-    AuthenticationWebFilter jwtAuthenticationFilter(ReactiveAuthenticationManager authManager) {
-        AuthenticationWebFilter jwtAuthenticationFilter = new AuthenticationWebFilter(authManager);
-        jwtAuthenticationFilter.setAuthenticationConverter(new JwtBearerAuthenticationConverter(jwtUtil));
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
-
-        return jwtAuthenticationFilter;
+    @Bean
+    public WebFilter jwtWebFilter(){
+        return new JwtWebFilter(jwtUtil);
     }
 
     @Bean
