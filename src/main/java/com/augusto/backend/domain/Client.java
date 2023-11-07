@@ -3,8 +3,8 @@ package com.augusto.backend.domain;
 import com.augusto.backend.domain.enums.ClientProfileEnum;
 import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

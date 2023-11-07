@@ -2,9 +2,9 @@ package com.augusto.backend.dto;
 
 import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.augusto.backend.resource.validator.ClientCreate;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
 @ClientCreate

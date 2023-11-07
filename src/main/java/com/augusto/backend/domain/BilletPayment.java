@@ -3,8 +3,8 @@ package com.augusto.backend.domain;
 import com.augusto.backend.domain.enums.PaymentStateEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.persistence.Entity;
 
-import javax.persistence.Entity;
 import java.util.Date;
 
 @Entity

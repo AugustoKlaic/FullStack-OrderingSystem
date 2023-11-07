@@ -2,9 +2,9 @@ package com.augusto.backend.resource.validator;
 
 import com.augusto.backend.domain.enums.ClientTypeEnum;
 import com.augusto.backend.dto.CompleteClientDto;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
 

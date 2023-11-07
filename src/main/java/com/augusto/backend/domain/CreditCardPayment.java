@@ -1,10 +1,8 @@
 package com.augusto.backend.domain;
 
 import com.augusto.backend.domain.enums.PaymentStateEnum;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 @JsonTypeName("creditCardPayment")

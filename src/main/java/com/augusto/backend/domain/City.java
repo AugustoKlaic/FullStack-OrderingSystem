@@ -1,8 +1,6 @@
 package com.augusto.backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class City {

@@ -1,9 +1,9 @@
 package com.augusto.backend.service.email;
 
 import com.augusto.backend.domain.PurchaseOrder;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
 
-import javax.mail.internet.MimeMessage;
 
 public interface EmailService {
 

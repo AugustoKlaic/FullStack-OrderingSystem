@@ -1,9 +1,8 @@
 package com.augusto.backend.service.email;
 
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-
-import javax.mail.internet.MimeMessage;
 
 @Service
 public class SMTPEmailService extends AbstractEmailService {

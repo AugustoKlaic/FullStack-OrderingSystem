@@ -1,9 +1,9 @@
 package com.augusto.backend.resource.validator;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.stereotype.Component;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

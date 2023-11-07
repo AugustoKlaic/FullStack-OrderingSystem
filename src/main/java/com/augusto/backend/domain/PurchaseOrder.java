@@ -1,9 +1,8 @@
 package com.augusto.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
