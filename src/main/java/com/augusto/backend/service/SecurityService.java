@@ -10,12 +10,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Service
 public class SecurityService {
+
+    private static final DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     private final ClientService clientService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -28,21 +28,28 @@ public class SecurityService {
         this.jwtUtil = jwtUtil;
     }
 
-
     public TokenDto authenticate(String email, String password) {
         Client client = clientService.findByEmail(email);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         if (passwordEncoder.matches(password, client.getClientPassword())) {
-            String token = jwtUtil.generateToken(client);
-            Claims claims = jwtUtil.getAllClaimsFromToken(token);
-            return new TokenDto(
-                    client.getId(),
-                    token,
-                    sdf.format(claims.getIssuedAt()),
-                    sdf.format(claims.getExpiration()));
+            return buildToken(client);
         } else {
             throw new AuthenticationException("Invalid client password!");
         }
+    }
+
+    public TokenDto refreshToken(String email) {
+        Client client = clientService.findByEmail(email);
+        return buildToken(client);
+    }
+
+    private TokenDto buildToken(Client client) {
+        String token = jwtUtil.generateToken(client);
+        Claims claims = jwtUtil.getAllClaimsFromToken(token);
+        return new TokenDto(
+                client.getId(),
+                token,
+                sdf.format(claims.getIssuedAt()),
+                sdf.format(claims.getExpiration()));
     }
 }

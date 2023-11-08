@@ -28,4 +28,11 @@ public class SecurityHandler {
                         .header(AUTH_HEADER, (TOKEN_PREFIX + tokenInfo.getToken()))
                         .bodyValue(tokenInfo));
     }
+
+    public Mono<ServerResponse> refreshToken(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(CredentialsDto.class)
+                .map(credentials -> securityService.refreshToken(credentials.getEmail()))
+                .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(tokenInfo));
+    }
 }

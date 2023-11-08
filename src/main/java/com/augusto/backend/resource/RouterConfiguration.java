@@ -58,8 +58,9 @@ public class RouterConfiguration {
 
     @Bean
     public RouterFunction<ServerResponse> securityRouter(SecurityHandler securityHandler) {
-        return route().path("/login", builder -> builder
-                .POST("", securityHandler::login))
+        return route().path("", builder -> builder
+                .POST("/login", securityHandler::login))
+                .POST("/token-refresh", securityHandler::refreshToken)
                 .build();
     }
 }
