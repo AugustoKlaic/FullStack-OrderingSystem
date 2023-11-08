@@ -30,18 +30,21 @@ public class CustomAuthorizationManager implements ReactiveAuthorizationManager<
         return authentication.flatMap(auth -> {
             Client client = clientService.findByEmail(auth.getPrincipal().toString());
 
-            if(client == null) {
+            if (client == null) {
                 return Mono.just(new AuthorizationDecision(false));
             }
 
             RequestPath path = ctx.getExchange().getRequest().getPath();
 
-            if(!auth.getAuthorities().contains(new SimpleGrantedAuthority(ClientProfileEnum.ADMIN.getDescription()))
-                    && !client.getId().equals(extractUserIdFromPath(path))
-                    && path.value().contains(CLIENT_URL)) {
-                return Mono.just(new AuthorizationDecision(false));
+            if (path.value().contains(CLIENT_URL)) {
+                if (!auth.getAuthorities().contains(new SimpleGrantedAuthority(ClientProfileEnum.ADMIN.getDescription()))
+                        && !client.getId().equals(extractUserIdFromPath(path))) {
+                    return Mono.just(new AuthorizationDecision(false));
+                } else {
+                    return Mono.just(new AuthorizationDecision(true));
+                }
             } else {
-               return Mono.just(new AuthorizationDecision(true));
+                return Mono.just(new AuthorizationDecision(true));
             }
         });
     }

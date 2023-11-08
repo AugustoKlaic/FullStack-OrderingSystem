@@ -1,6 +1,7 @@
 package com.augusto.backend.service;
 
 import com.augusto.backend.domain.BilletPayment;
+import com.augusto.backend.domain.Client;
 import com.augusto.backend.domain.Product;
 import com.augusto.backend.domain.PurchaseOrder;
 import com.augusto.backend.domain.enums.PaymentStateEnum;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class PurchaseOrderService {
@@ -37,6 +39,11 @@ public class PurchaseOrderService {
         this.purchaseOrderItemRepository = purchaseOrderItemRepository;
         this.clientService = clientService;
         this.emailService = emailService;
+    }
+
+    public List<PurchaseOrder> findAllPurchaseOrders(String clientEmail) {
+        Client client = clientService.findByEmail(clientEmail);
+        return purchaseOrderRepository.findAllPurchaseOrdersByClient(client.getId());
     }
 
     public PurchaseOrder findById(final Integer id) {

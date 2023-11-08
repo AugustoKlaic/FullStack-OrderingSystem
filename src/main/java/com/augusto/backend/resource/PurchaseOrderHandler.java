@@ -17,13 +17,20 @@ import java.net.URI;
 
 @Component
 public class PurchaseOrderHandler {
-    private static final String PURCHASE_ORDERS_URI = "/purchase-orders/";
+    private static final String PURCHASE_ORDERS_URI = "/purchase-orders";
 
     private final PurchaseOrderService purchaseOrderService;
 
     @Autowired
     public PurchaseOrderHandler(PurchaseOrderService purchaseOrderService) {
         this.purchaseOrderService = purchaseOrderService;
+    }
+
+    public Mono<ServerResponse> getPurchaseOrders(ServerRequest serverRequest) {
+        return serverRequest.principal()
+                .map(user -> purchaseOrderService.findAllPurchaseOrders(user.getName()))
+                .flatMap(purchaseOrder -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(purchaseOrder))
+                .onErrorResume(this::errorHandler);
     }
 
     public Mono<ServerResponse> getPurchaseOrderById(ServerRequest serverRequest) {
