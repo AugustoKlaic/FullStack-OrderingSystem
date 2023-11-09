@@ -77,6 +77,11 @@ public class ClientService {
     }
 
     @Transactional
+    public Client update(Client client) {
+        return clientRepository.save(client);
+    }
+
+    @Transactional
     public Integer deleteById(final Integer id) {
         clientRepository.deleteById(findById(id).getId());
         return id;

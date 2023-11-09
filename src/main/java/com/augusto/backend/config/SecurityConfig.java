@@ -31,7 +31,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_MATCHERS_POST = {
             "/login/**",
-            "/clients/**"
+            "/clients/**",
+            "/forgot-password/**"
     };
 
     private final JwtUtil jwtUtil;

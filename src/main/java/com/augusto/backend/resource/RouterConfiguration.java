@@ -61,6 +61,7 @@ public class RouterConfiguration {
         return route().path("", builder -> builder
                 .POST("/login", securityHandler::login))
                 .POST("/token-refresh", securityHandler::refreshToken)
+                .POST("/forgot-password", securityHandler::forgetPassword)
                 .build();
     }
 }

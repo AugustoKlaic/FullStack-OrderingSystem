@@ -1,5 +1,6 @@
 package com.augusto.backend.service.email;
 
+import com.augusto.backend.domain.Client;
 import com.augusto.backend.domain.PurchaseOrder;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -42,6 +43,22 @@ public abstract class AbstractEmailService implements EmailService {
         } catch (MessagingException e) {
             sendPurchaseOrderConfirmationTextEmail(purchaseOrder);
         }
+    }
+
+    @Override
+    public void sendPasswordRecoveryEmail(Client client, String newPassword) {
+        SimpleMailMessage simpleMailMessage = prepareNewPasswordMessage(client, newPassword);
+        sendTextEmail(simpleMailMessage);
+    }
+
+    private SimpleMailMessage prepareNewPasswordMessage(Client client, String newPassword) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(client.getEmail());
+        simpleMailMessage.setFrom(this.sender);
+        simpleMailMessage.setSubject("New password request.");
+        simpleMailMessage.setSentDate(new Date(System.currentTimeMillis()));
+        simpleMailMessage.setText("Your new generated password is: " + newPassword);
+        return simpleMailMessage;
     }
 
     private MimeMessage prepareEmailHtmlMessage(PurchaseOrder purchaseOrder) throws MessagingException {
