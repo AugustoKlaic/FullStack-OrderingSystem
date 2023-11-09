@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Component
 public class ProductHandler {
 
+    private static final String PRODUCT_DOMAIN = "Product";
+
     private final ProductService productService;
 
     @Autowired
@@ -31,8 +33,7 @@ public class ProductHandler {
     public Mono<ServerResponse> getProductsById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> productService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(product -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(product))
-                .onErrorResume(e -> ServerResponse.status(HttpStatus.NOT_FOUND)
-                        .bodyValue(e));
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, PRODUCT_DOMAIN));
     }
 
     public Mono<ServerResponse> searchProducts(ServerRequest serverRequest) {
@@ -45,7 +46,7 @@ public class ProductHandler {
         String name = URLDecoder.decode(serverRequest.queryParam("name").orElse(""), StandardCharsets.UTF_8);
 
         return Mono.fromCallable(() -> productService.searchProducts(name, ids))
-                .flatMap(product -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(product));
+                .flatMap(product -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(product))
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, PRODUCT_DOMAIN));
     }
 }

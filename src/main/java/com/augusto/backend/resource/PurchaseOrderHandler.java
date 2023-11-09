@@ -18,6 +18,7 @@ import java.net.URI;
 @Component
 public class PurchaseOrderHandler {
     private static final String PURCHASE_ORDERS_URI = "/purchase-orders";
+    private static final String PURCHASE_ORDERS_DOMAIN = "Purchase-Order";
 
     private final PurchaseOrderService purchaseOrderService;
 
@@ -30,13 +31,13 @@ public class PurchaseOrderHandler {
         return serverRequest.principal()
                 .map(user -> purchaseOrderService.findAllPurchaseOrders(user.getName()))
                 .flatMap(purchaseOrder -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(purchaseOrder))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, PURCHASE_ORDERS_DOMAIN));
     }
 
     public Mono<ServerResponse> getPurchaseOrderById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> purchaseOrderService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(purchaseOrder -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(purchaseOrder))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, PURCHASE_ORDERS_DOMAIN));
     }
 
     public Mono<ServerResponse> createPurchaseOrder(ServerRequest serverRequest) {
@@ -45,17 +46,6 @@ public class PurchaseOrderHandler {
                 .flatMap(createdPurchaseOrder -> ServerResponse.created(
                                 URI.create(PURCHASE_ORDERS_URI.concat(String.valueOf(createdPurchaseOrder.getId()))))
                         .bodyValue(createdPurchaseOrder))
-                .onErrorResume(this::errorHandler);
-    }
-
-    public Mono<ServerResponse> errorHandler(Throwable error) {
-        if (error instanceof ValidatorException) {
-            return ServerResponse.unprocessableEntity()
-                    .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
-        } else if (error instanceof ObjectNotFoundException) {
-            return ServerResponse.notFound().build();
-        } else {
-            return ServerResponse.badRequest().build();
-        }
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, PURCHASE_ORDERS_DOMAIN));
     }
 }

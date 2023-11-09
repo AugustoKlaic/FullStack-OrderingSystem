@@ -41,7 +41,7 @@ public class ClientHandler {
     public Mono<ServerResponse> getClientById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> clientService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(client -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(client))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 
     public Mono<ServerResponse> createClient(ServerRequest serverRequest) {
@@ -50,7 +50,7 @@ public class ClientHandler {
                 .map(clientService::create)
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 
     public Mono<ServerResponse> updateClient(ServerRequest serverRequest) {
@@ -61,30 +61,13 @@ public class ClientHandler {
                 .map(client -> clientService.update(client, clientId))
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> deleteClientById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> clientService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
-                .onErrorResume(this::errorHandler);
-    }
-
-    public Mono<ServerResponse> errorHandler(Throwable error) {
-        if (error instanceof ValidatorException) {
-            return ServerResponse.unprocessableEntity()
-                    .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
-        } else if (error instanceof ObjectNotFoundException) {
-            return ServerResponse.notFound().build();
-        } else if (error instanceof IllegalObjectException) {
-                return ServerResponse.badRequest()
-                        .bodyValue(new ErrorClass(CLIENT_DOMAIN, error.getMessage()));
-        } else if (error instanceof DataIntegrityViolationException){
-            return ServerResponse.unprocessableEntity()
-                    .bodyValue(new ErrorClass(CLIENT_DOMAIN, error.getMessage()));
-        } else {
-            return ServerResponse.badRequest().build();
-        }
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 }

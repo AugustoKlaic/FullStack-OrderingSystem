@@ -20,6 +20,7 @@ import java.net.URI;
 public class CategoryHandler {
 
     private static final String CATEGORY_URI = "/categories/";
+    private static final String CATEGORY_DOMAIN = "Category";
     private final CategoryService categoryService;
     private final RequestValidator requestValidator;
 
@@ -38,7 +39,7 @@ public class CategoryHandler {
     public Mono<ServerResponse> getCategoriesById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.findById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(category -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(category))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -49,7 +50,7 @@ public class CategoryHandler {
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
                         .bodyValue(createdCategory))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -59,24 +60,13 @@ public class CategoryHandler {
                 .map(categoryService::update)
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
-                .onErrorResume(this::errorHandler);
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> deleteCategoryById(ServerRequest serverRequest) {
         return Mono.fromCallable(() -> categoryService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
-                .onErrorResume(this::errorHandler);
-    }
-
-    public Mono<ServerResponse> errorHandler(Throwable error) {
-        if (error instanceof ValidatorException) {
-            return ServerResponse.unprocessableEntity()
-                    .bodyValue(new ErrorClass(((ValidatorException) error).getErrorDetail()));
-        } else if (error instanceof ObjectNotFoundException) {
-            return ServerResponse.notFound().build();
-        } else {
-            return ServerResponse.badRequest().build();
-        }
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
     }
 }

@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 public class SecurityHandler {
     private static final String AUTH_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String AUTH_DOMAIN = "Auth";
 
     private final SecurityService securityService;
     private final RequestValidator requestValidator;
@@ -31,20 +32,23 @@ public class SecurityHandler {
                 .map(credentials -> securityService.authenticate(credentials.getEmail(), credentials.getPassword()))
                 .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                         .header(AUTH_HEADER, (TOKEN_PREFIX + tokenInfo.getToken()))
-                        .bodyValue(tokenInfo));
+                        .bodyValue(tokenInfo))
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 
     public Mono<ServerResponse> refreshToken(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CredentialsDto.class)
                 .map(credentials -> securityService.refreshToken(credentials.getEmail()))
                 .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(tokenInfo));
+                        .bodyValue(tokenInfo))
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 
     public Mono<ServerResponse> forgetPassword(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ForgotMyPasswordDto.class)
                 .doOnNext(requestValidator::validateRequest)
                 .doOnNext(email -> securityService.forgotPassword(email.getEmail()))
-                .flatMap(tokenInfo -> ServerResponse.noContent().build());
+                .flatMap(tokenInfo -> ServerResponse.noContent().build())
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 }
