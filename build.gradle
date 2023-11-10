@@ -43,4 +43,10 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
     compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
 
+    // aws
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.12.585'
+    // commons-io - archive manipulation
+    implementation group: 'commons-io', name: 'commons-io', version: '2.15.0'
+
+
 }
