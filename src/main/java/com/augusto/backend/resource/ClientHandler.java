@@ -11,8 +11,11 @@ import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -69,5 +72,11 @@ public class ClientHandler {
         return Mono.fromCallable(() -> clientService.deleteById(Integer.parseInt(serverRequest.pathVariable("id"))))
                 .flatMap(categoryId -> ServerResponse.ok().bodyValue(categoryId))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
+    }
+
+    public Mono<ServerResponse> uploadProfilePicture(ServerRequest serverRequest) {
+        return serverRequest.body(BodyExtractors.toMultipartData())
+                .flatMap(fileParts -> clientService.uploadProfilePicture((FilePart) fileParts.toSingleValueMap().get("file")))
+                .flatMap(uri -> ServerResponse.created(uri).build());
     }
 }

@@ -11,10 +11,14 @@ import com.augusto.backend.repository.ClientRepository;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -25,13 +29,16 @@ public class ClientService {
     private final AddressRespository addressRespository;
     private final CityRepository cityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository, CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder) {
+    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository,
+                         CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
         this.clientRepository = clientRepository;
         this.addressRespository = addressRespository;
         this.cityRepository = cityRepository;
         this.passwordEncoder = passwordEncoder;
+        this.s3Service = s3Service;
     }
 
     public List<Client> findAllClients() {
@@ -85,6 +92,10 @@ public class ClientService {
     public Integer deleteById(final Integer id) {
         clientRepository.deleteById(findById(id).getId());
         return id;
+    }
+
+    public Mono<URI> uploadProfilePicture(FilePart filePart) {
+        return s3Service.uploadFile(filePart);
     }
 
     private Client toDomainObject(CompleteClientDto clientDto) {

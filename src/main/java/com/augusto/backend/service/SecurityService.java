@@ -39,8 +39,8 @@ public class SecurityService {
 
         String newPassword = generateNewPassword();
         client.setClientPassword(passwordEncoder.encode(newPassword));
-        clientService.update(client);
-        emailService.sendPasswordRecoveryEmail(client, newPassword);
+        Client updatedClient = clientService.update(client);
+        emailService.sendPasswordRecoveryEmail(updatedClient, updatedClient.getClientPassword());
     }
 
     private String generateNewPassword() {

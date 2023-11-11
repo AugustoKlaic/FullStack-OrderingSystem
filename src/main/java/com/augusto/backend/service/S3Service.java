@@ -3,14 +3,27 @@ package com.augusto.backend.service;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Objects;
 
 @Service
 public class S3Service {
@@ -36,6 +49,28 @@ public class S3Service {
             LOG.info("Server erro: " + ase.getStatusCode() + "Message: " + ase.getMessage());
         } catch (AmazonClientException ace) {
             LOG.info(ace.getMessage());
+        }
+    }
+
+    public Mono<URI> uploadFile(FilePart filePart) {
+        return DataBufferUtils.join(filePart.content())
+                .flatMap(inputStream -> this.uploadFile(inputStream.asInputStream(), filePart.filename(),
+                                Objects.requireNonNull(filePart.headers().getContentType()))
+                        .doOnNext(uri -> DataBufferUtils.release(inputStream)));
+    }
+
+    public Mono<URI> uploadFile(InputStream inputStream, String fileName, MediaType contentType) {
+
+        LOG.info("Starting file upload: ");
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType.getType());
+        s3Client.putObject(bucketName, fileName, inputStream, objectMetadata);
+        LOG.info("Upload finished");
+
+        try {
+            return Mono.just(s3Client.getUrl(bucketName, fileName).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Error converting URL to URI.");
         }
     }
 }

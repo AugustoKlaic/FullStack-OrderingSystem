@@ -1,5 +1,6 @@
 package com.augusto.backend.resource;
 
+import org.apache.http.entity.ContentType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -8,6 +9,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -28,12 +30,14 @@ public class RouterConfiguration {
     @Bean
     public RouterFunction<ServerResponse> clientRouter(ClientHandler clientHandler) {
         return route().path("/clients", builder -> builder
-                .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
+                .nest(accept(MediaType.ALL), uriBuilder -> uriBuilder
                         .GET("", clientHandler::getClients)
                         .GET("/{id}", clientHandler::getClientById)
                         .POST("", clientHandler::createClient)
                         .PUT("/{id}", clientHandler::updateClient)
-                        .DELETE("/{id}", clientHandler::deleteClientById)))
+                        .DELETE("/{id}", clientHandler::deleteClientById))
+                .nest(contentType(MediaType.MULTIPART_FORM_DATA), profilePicBuilder -> profilePicBuilder
+                        .POST("/profile-picture", clientHandler::uploadProfilePicture)))
                 .build();
     }
 
