@@ -77,6 +77,7 @@ public class ClientHandler {
     public Mono<ServerResponse> uploadProfilePicture(ServerRequest serverRequest) {
         return serverRequest.body(BodyExtractors.toMultipartData())
                 .flatMap(fileParts -> clientService.uploadProfilePicture((FilePart) fileParts.toSingleValueMap().get("file")))
-                .flatMap(uri -> ServerResponse.created(uri).build());
+                .flatMap(uri -> ServerResponse.created(uri).build())
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 }

@@ -2,6 +2,7 @@ package com.augusto.backend.resource;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.ValidatorException;
 import com.augusto.backend.service.exception.*;
