@@ -5,6 +5,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.augusto.backend.service.exception.FileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
+    // used for testing purposes
     public void uploadFile(String localFilePath) {
         try {
             File file = new File(localFilePath);
@@ -56,7 +58,8 @@ public class S3Service {
         return DataBufferUtils.join(filePart.content())
                 .flatMap(inputStream -> this.uploadFile(inputStream.asInputStream(), filePart.filename(),
                                 Objects.requireNonNull(filePart.headers().getContentType()))
-                        .doOnNext(uri -> DataBufferUtils.release(inputStream)));
+                        .doOnNext(uri -> DataBufferUtils.release(inputStream)))
+                .doOnError(e -> LOG.info("Problem retrieving file: " + e.getMessage()));
     }
 
     public Mono<URI> uploadFile(InputStream inputStream, String fileName, MediaType contentType) {
@@ -70,7 +73,7 @@ public class S3Service {
         try {
             return Mono.just(s3Client.getUrl(bucketName, fileName).toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Error converting URL to URI.");
+            return Mono.error(new FileException("Error converting URL to URI."));
         }
     }
 }

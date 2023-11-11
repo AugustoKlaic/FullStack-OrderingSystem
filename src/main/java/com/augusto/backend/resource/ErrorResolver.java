@@ -1,11 +1,10 @@
 package com.augusto.backend.resource;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.augusto.backend.resource.validator.ErrorClass;
 import com.augusto.backend.resource.validator.ValidatorException;
-import com.augusto.backend.service.exception.AuthenticationException;
-import com.augusto.backend.service.exception.AuthorizationException;
-import com.augusto.backend.service.exception.IllegalObjectException;
-import com.augusto.backend.service.exception.ObjectNotFoundException;
+import com.augusto.backend.service.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -32,6 +31,15 @@ public class ErrorResolver {
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
         } else if(error instanceof AuthorizationException) {
             return ServerResponse.status(HttpStatus.FORBIDDEN)
+                    .bodyValue(new ErrorClass(domain, error.getMessage()));
+        } else if(error instanceof FileException) {
+            return ServerResponse.status(HttpStatus.BAD_REQUEST)
+                    .bodyValue(new ErrorClass(domain, error.getMessage()));
+        } else if(error instanceof AmazonServiceException) {
+            return ServerResponse.status(HttpStatus.valueOf(((AmazonServiceException) error).getStatusCode()))
+                    .bodyValue(new ErrorClass(domain, error.getMessage()));
+        } else if(error instanceof AmazonClientException) {
+            return ServerResponse.status(HttpStatus.BAD_REQUEST)
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
         } else {
             return ServerResponse.badRequest().build();
