@@ -40,8 +40,7 @@ public class CustomAuthorizationManager implements ReactiveAuthorizationManager<
             } else {
                 return Mono.just(new AuthorizationDecision(true));
             }
-
-        });
+        }).switchIfEmpty(Mono.just(new AuthorizationDecision(true)));
     }
 
     @Override
