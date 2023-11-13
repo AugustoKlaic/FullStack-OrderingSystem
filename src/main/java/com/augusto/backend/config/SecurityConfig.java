@@ -32,7 +32,6 @@ public class SecurityConfig {
     private static final String[] PUBLIC_MATCHERS_POST = {
             "/login/**",
             "/clients",
-            "/clients/profile-picture",
             "/forgot-password/**"
     };
 

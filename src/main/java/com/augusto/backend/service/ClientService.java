@@ -12,13 +12,16 @@ import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -95,7 +98,17 @@ public class ClientService {
     }
 
     public Mono<URI> uploadProfilePicture(FilePart filePart) {
-        return s3Service.uploadFile(filePart);
+        return s3Service.uploadFile(filePart)
+                .flatMap(uri -> ReactiveSecurityContextHolder.getContext()
+                        .flatMap(ctx -> {
+                            Integer clientId = Integer.valueOf(ctx.getAuthentication().getCredentials().toString());
+                            Client client = this.findById(clientId);
+
+                            client.setClientProfilePictureUrl(uri.toString());
+                            return Mono.fromCallable(() -> this.clientRepository.save(client))
+                                    .subscribeOn(Schedulers.boundedElastic())
+                                    .thenReturn(uri);
+                        }));
     }
 
     private Client toDomainObject(CompleteClientDto clientDto) {

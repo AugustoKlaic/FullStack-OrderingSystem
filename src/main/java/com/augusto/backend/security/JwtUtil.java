@@ -34,6 +34,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(client.getEmail())
                 .claim("role", client.getClientProfiles().stream().map(ClientProfileEnum::getDescription).collect(Collectors.toSet()))
+                .claim("clientId", client.getId())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .issuedAt(new Date())
                 .signWith(Keys.hmacShaKeyFor(jwtSecretWord.getBytes()))

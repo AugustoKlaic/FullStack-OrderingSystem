@@ -23,6 +23,7 @@ public class Client {
     private String nationalIdentity;
     private ClientTypeEnum clientType;
 
+
     @JsonIgnore
     private String clientPassword;
 
@@ -40,6 +41,16 @@ public class Client {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "client_profile")
     private Set<Integer> clientProfiles;
+
+    private String clientProfilePictureUrl;
+
+    public String getClientProfilePictureUrl() {
+        return clientProfilePictureUrl;
+    }
+
+    public void setClientProfilePictureUrl(String clientProfilePictureUrl) {
+        this.clientProfilePictureUrl = clientProfilePictureUrl;
+    }
 
     public Client() {
         this.clientProfiles = new HashSet<>();

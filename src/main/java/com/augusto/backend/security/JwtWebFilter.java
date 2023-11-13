@@ -38,11 +38,12 @@ public class JwtWebFilter implements WebFilter {
     public Mono<Authentication> create(String token) {
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
         String subject = claims.getSubject();
+        String clientId = claims.get("clientId").toString();
         List<String> roles = claims.get("role", List.class);
         List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        return Mono.justOrEmpty(new UsernamePasswordAuthenticationToken(subject, null, authorities));
+        return Mono.justOrEmpty(new UsernamePasswordAuthenticationToken(subject, clientId, authorities));
     }
 
     public Mono<String> extract(ServerWebExchange serverWebExchange) {

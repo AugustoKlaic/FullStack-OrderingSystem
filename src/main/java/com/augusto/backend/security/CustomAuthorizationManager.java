@@ -34,27 +34,18 @@ public class CustomAuthorizationManager implements ReactiveAuthorizationManager<
                 return Mono.just(new AuthorizationDecision(false));
             }
 
-            RequestPath path = ctx.getExchange().getRequest().getPath();
-
-            if (path.value().contains(CLIENT_URL)) {
-                if (!auth.getAuthorities().contains(new SimpleGrantedAuthority(ClientProfileEnum.ADMIN.getDescription()))
-                        && !client.getId().equals(extractUserIdFromPath(path))) {
-                    return Mono.just(new AuthorizationDecision(false));
-                } else {
-                    return Mono.just(new AuthorizationDecision(true));
-                }
+            if (!auth.getAuthorities().contains(new SimpleGrantedAuthority(ClientProfileEnum.ADMIN.getDescription()))
+                    && !client.getId().equals(Integer.valueOf(auth.getCredentials().toString()))) {
+                return Mono.just(new AuthorizationDecision(false));
             } else {
                 return Mono.just(new AuthorizationDecision(true));
             }
+
         });
     }
 
     @Override
     public Mono<Void> verify(Mono<Authentication> authentication, AuthorizationContext object) {
         return ReactiveAuthorizationManager.super.verify(authentication, object);
-    }
-
-    private Integer extractUserIdFromPath(RequestPath path) {
-        return Integer.valueOf(path.elements().getLast().value());
     }
 }
