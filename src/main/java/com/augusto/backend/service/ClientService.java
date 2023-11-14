@@ -7,7 +7,6 @@ import com.augusto.backend.dto.ClientDto;
 import com.augusto.backend.dto.CompleteClientDto;
 import com.augusto.backend.repository.AddressRespository;
 import com.augusto.backend.repository.CityRepository;
-import com.augusto.backend.repository.ClientRepository;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,27 +15,25 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
-import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
 @Service
-public class ClientService {
+public class ClientRepository {
 
-    private final ClientRepository clientRepository;
+    private final com.augusto.backend.repository.ClientRepository clientRepository;
     private final AddressRespository addressRespository;
     private final CityRepository cityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository,
-                         CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
+    public ClientRepository(com.augusto.backend.repository.ClientRepository clientRepository, AddressRespository addressRespository,
+                            CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
         this.clientRepository = clientRepository;
         this.addressRespository = addressRespository;
         this.cityRepository = cityRepository;

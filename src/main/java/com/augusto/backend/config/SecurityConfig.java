@@ -1,23 +1,23 @@
 package com.augusto.backend.config;
 
-import com.augusto.backend.security.JwtUtil;
-import com.augusto.backend.security.JwtWebFilter;
+import com.augusto.backend.security.CustomAuthenticationManager;
+import com.augusto.backend.security.CustomAuthorizationManager;
+import com.augusto.backend.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authorization.AuthorizationContext;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.server.WebFilter;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -35,27 +35,36 @@ public class SecurityConfig {
             "/forgot-password/**"
     };
 
-    private final JwtUtil jwtUtil;
+    private final CustomAuthorizationManager customAuthorizationManager;
+    private final CustomAuthenticationManager customAuthenticationManager;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    @Autowired
+    public SecurityConfig(CustomAuthorizationManager customAuthorizationManager,
+                          CustomAuthenticationManager customAuthenticationManager,
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.customAuthorizationManager = customAuthorizationManager;
+        this.customAuthenticationManager = customAuthenticationManager;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, ReactiveAuthorizationManager<AuthorizationContext> authorizationManager) {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange((exchanges) -> exchanges.pathMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
-                                                       .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
-                                                       .anyExchange().access(authorizationManager))
+                        .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+                        .anyExchange().access(customAuthorizationManager))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(ServerHttpSecurity.CorsSpec::disable)
-                .addFilterAt(jwtWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterAt(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // set session to stateless
         return http.build();
     }
 
     @Bean
-    public WebFilter jwtWebFilter(){
-        return new JwtWebFilter(jwtUtil);
+    public AuthenticationWebFilter authenticationWebFilter() {
+        AuthenticationWebFilter filter = new AuthenticationWebFilter(customAuthenticationManager);
+        filter.setServerAuthenticationConverter(jwtAuthenticationFilter);
+        return filter;
     }
 
     @Bean

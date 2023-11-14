@@ -45,10 +45,16 @@ public class JwtUtil {
         var claims = getAllClaimsFromToken(token);
         final Date expiration = claims.getExpiration();
 
-        if (expiration.before(new Date()))
+        if (expiration.before(new Date())) {
             throw new RuntimeException("Token expired");
+        }
 
         return token;
+    }
+
+    public boolean isTokenValid(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return !claims.getExpiration().before(new Date());
     }
 
     public Claims getAllClaimsFromToken(String token) {
