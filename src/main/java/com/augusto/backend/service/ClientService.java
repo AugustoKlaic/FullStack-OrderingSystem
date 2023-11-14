@@ -7,6 +7,8 @@ import com.augusto.backend.dto.ClientDto;
 import com.augusto.backend.dto.CompleteClientDto;
 import com.augusto.backend.repository.AddressRespository;
 import com.augusto.backend.repository.CityRepository;
+import com.augusto.backend.repository.ClientRepository;
+import com.augusto.backend.security.CredentialsHelper;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +25,17 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class ClientRepository {
+public class ClientService {
 
-    private final com.augusto.backend.repository.ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
     private final AddressRespository addressRespository;
     private final CityRepository cityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
     @Autowired
-    public ClientRepository(com.augusto.backend.repository.ClientRepository clientRepository, AddressRespository addressRespository,
-                            CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
+    public ClientService(ClientRepository clientRepository, AddressRespository addressRespository,
+                         CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
         this.clientRepository = clientRepository;
         this.addressRespository = addressRespository;
         this.cityRepository = cityRepository;
@@ -98,8 +100,8 @@ public class ClientRepository {
         return s3Service.uploadFile(filePart)
                 .flatMap(uri -> ReactiveSecurityContextHolder.getContext()
                         .flatMap(ctx -> {
-                            Integer clientId = Integer.valueOf(ctx.getAuthentication().getCredentials().toString());
-                            Client client = this.findById(clientId);
+                            CredentialsHelper credentialsHelper = (CredentialsHelper) ctx.getAuthentication().getCredentials();
+                            Client client = this.findById(Integer.valueOf(credentialsHelper.getClientId()));
 
                             client.setClientProfilePictureUrl(uri.toString());
                             return Mono.fromCallable(() -> this.clientRepository.save(client))

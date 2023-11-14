@@ -2,13 +2,16 @@ package com.augusto.backend.service;
 
 import com.augusto.backend.domain.Client;
 import com.augusto.backend.dto.TokenDto;
+import com.augusto.backend.security.CredentialsHelper;
 import com.augusto.backend.security.JwtUtil;
 import com.augusto.backend.service.email.EmailService;
 import com.augusto.backend.service.exception.AuthenticationException;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -75,9 +78,11 @@ public class SecurityService {
         }
     }
 
-    public TokenDto refreshToken(String email) {
-        Client client = clientService.findByEmail(email);
-        return buildToken(client);
+    public Mono<TokenDto> refreshToken() {
+        return ReactiveSecurityContextHolder.getContext().map(ctx -> {
+            CredentialsHelper credentialsHelper = (CredentialsHelper) ctx.getAuthentication().getCredentials();
+            return clientService.findById(Integer.valueOf(credentialsHelper.getClientId()));
+        }).map(this::buildToken);
     }
 
     private TokenDto buildToken(Client client) {

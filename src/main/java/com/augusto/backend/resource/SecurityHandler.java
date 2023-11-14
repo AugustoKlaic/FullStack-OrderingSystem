@@ -5,6 +5,7 @@ import com.augusto.backend.dto.ForgotMyPasswordDto;
 import com.augusto.backend.resource.validator.RequestValidator;
 import com.augusto.backend.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -13,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class SecurityHandler {
-    private static final String AUTH_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String AUTH_DOMAIN = "Auth";
 
@@ -31,16 +31,16 @@ public class SecurityHandler {
         return serverRequest.bodyToMono(CredentialsDto.class)
                 .map(credentials -> securityService.authenticate(credentials.getEmail(), credentials.getPassword()))
                 .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .header(AUTH_HEADER, (TOKEN_PREFIX + tokenInfo.getToken()))
+                        .header(HttpHeaders.AUTHORIZATION, (TOKEN_PREFIX + tokenInfo.getToken()))
                         .bodyValue(tokenInfo))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 
     public Mono<ServerResponse> refreshToken(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(CredentialsDto.class)
-                .map(credentials -> securityService.refreshToken(credentials.getEmail()))
-                .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(tokenInfo))
+        return securityService.refreshToken()
+                .flatMap(tokenInfo -> ServerResponse.noContent()
+                        .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION,
+                                (TOKEN_PREFIX + tokenInfo.getToken()))).build())
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 
