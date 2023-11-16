@@ -31,7 +31,10 @@ public class SecurityHandler {
         return serverRequest.bodyToMono(CredentialsDto.class)
                 .map(credentials -> securityService.authenticate(credentials.getEmail(), credentials.getPassword()))
                 .flatMap(tokenInfo -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .header(HttpHeaders.AUTHORIZATION, (TOKEN_PREFIX + tokenInfo.getToken()))
+                        .headers(httpHeaders -> {
+                            httpHeaders.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
+                            httpHeaders.add(HttpHeaders.AUTHORIZATION, (TOKEN_PREFIX + tokenInfo.getToken()));
+                        })
                         .bodyValue(tokenInfo))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
@@ -39,8 +42,10 @@ public class SecurityHandler {
     public Mono<ServerResponse> refreshToken(ServerRequest serverRequest) {
         return securityService.refreshToken()
                 .flatMap(tokenInfo -> ServerResponse.noContent()
-                        .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION,
-                                (TOKEN_PREFIX + tokenInfo.getToken()))).build())
+                        .headers(httpHeaders -> {
+                            httpHeaders.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
+                            httpHeaders.add(HttpHeaders.AUTHORIZATION, (TOKEN_PREFIX + tokenInfo.getToken()));
+                        }).build())
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, AUTH_DOMAIN));
     }
 

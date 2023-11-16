@@ -57,7 +57,7 @@ public class ImageService {
                 minSizeSide);
     }
 
-    public BufferedImage resize (BufferedImage image, Integer size) {
+    public BufferedImage resize(BufferedImage image, Integer size) {
         return Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, size);
     }
 

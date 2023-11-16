@@ -19,6 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -69,8 +72,19 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*")); // permit all origins
+        configuration.setAllowedMethods(Arrays.asList(
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.OPTIONS.name()
+        ));
+        configuration.addExposedHeader("Authorization");
+
         final UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
-        corsSource.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        corsSource.registerCorsConfiguration("/**", configuration);
         return corsSource;
     }
 
