@@ -12,35 +12,44 @@ import com.augusto.backend.security.CredentialsHelper;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
 public class ClientService {
+
+    @Value("${img.prefix.client.profile}")
+    private String clientProfileImagePrefix;
+    private static final String JPG_FORMAT = ".jpg";
 
     private final ClientRepository clientRepository;
     private final AddressRespository addressRespository;
     private final CityRepository cityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final S3Service s3Service;
+    private final ImageService imageService;
+
 
     @Autowired
     public ClientService(ClientRepository clientRepository, AddressRespository addressRespository,
-                         CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service) {
+                         CityRepository cityRepository, BCryptPasswordEncoder passwordEncoder, S3Service s3Service,
+                         ImageService imageService) {
         this.clientRepository = clientRepository;
         this.addressRespository = addressRespository;
         this.cityRepository = cityRepository;
         this.passwordEncoder = passwordEncoder;
         this.s3Service = s3Service;
+        this.imageService = imageService;
     }
 
     public List<Client> findAllClients() {
@@ -97,17 +106,13 @@ public class ClientService {
     }
 
     public Mono<URI> uploadProfilePicture(FilePart filePart) {
-        return s3Service.uploadFile(filePart)
-                .flatMap(uri -> ReactiveSecurityContextHolder.getContext()
-                        .flatMap(ctx -> {
-                            CredentialsHelper credentialsHelper = (CredentialsHelper) ctx.getAuthentication().getCredentials();
-                            Client client = this.findById(Integer.valueOf(credentialsHelper.getClientId()));
-
-                            client.setClientProfilePictureUrl(uri.toString());
-                            return Mono.fromCallable(() -> this.clientRepository.save(client))
-                                    .subscribeOn(Schedulers.boundedElastic())
-                                    .thenReturn(uri);
-                        }));
+        return ReactiveSecurityContextHolder.getContext()
+                .flatMap(ctx -> imageService.getJpgImageFromFile(filePart).flatMap(jpgImage -> {
+                    CredentialsHelper credentialsHelper = (CredentialsHelper) ctx.getAuthentication().getCredentials();
+                    String fileName = clientProfileImagePrefix + credentialsHelper.getClientId() + JPG_FORMAT;
+                    return imageService.getInputStream(jpgImage, JPG_FORMAT)
+                            .flatMap(inputStream -> s3Service.uploadFile(inputStream, fileName, Objects.requireNonNull(filePart.headers().getContentType())));
+                }));
     }
 
     private Client toDomainObject(CompleteClientDto clientDto) {

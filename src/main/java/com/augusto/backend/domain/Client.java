@@ -42,16 +42,6 @@ public class Client {
     @CollectionTable(name = "client_profile")
     private Set<Integer> clientProfiles;
 
-    private String clientProfilePictureUrl;
-
-    public String getClientProfilePictureUrl() {
-        return clientProfilePictureUrl;
-    }
-
-    public void setClientProfilePictureUrl(String clientProfilePictureUrl) {
-        this.clientProfilePictureUrl = clientProfilePictureUrl;
-    }
-
     public Client() {
         this.clientProfiles = new HashSet<>();
         addClientProfile(ClientProfileEnum.CLIENT);
