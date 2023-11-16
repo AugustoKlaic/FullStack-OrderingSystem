@@ -30,7 +30,11 @@ public class ClientService {
 
     @Value("${img.prefix.client.profile}")
     private String clientProfileImagePrefix;
-    private static final String JPG_FORMAT = ".jpg";
+
+    @Value("${img.profile.size}")
+    private Integer clientProfileImageSize;
+
+    private static final String JPG_FORMAT = "jpg";
 
     private final ClientRepository clientRepository;
     private final AddressRespository addressRespository;
@@ -109,7 +113,10 @@ public class ClientService {
         return ReactiveSecurityContextHolder.getContext()
                 .flatMap(ctx -> imageService.getJpgImageFromFile(filePart).flatMap(jpgImage -> {
                     CredentialsHelper credentialsHelper = (CredentialsHelper) ctx.getAuthentication().getCredentials();
-                    String fileName = clientProfileImagePrefix + credentialsHelper.getClientId() + JPG_FORMAT;
+                    String fileName = clientProfileImagePrefix + credentialsHelper.getClientId() + "." + JPG_FORMAT;
+
+                    jpgImage = imageService.cropImage(jpgImage);
+                    jpgImage = imageService.resize(jpgImage, clientProfileImageSize);
                     return imageService.getInputStream(jpgImage, JPG_FORMAT)
                             .flatMap(inputStream -> s3Service.uploadFile(inputStream, fileName, Objects.requireNonNull(filePart.headers().getContentType())));
                 }));

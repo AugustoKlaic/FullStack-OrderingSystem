@@ -2,10 +2,12 @@ package com.augusto.backend.service;
 
 import com.augusto.backend.service.exception.FileException;
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,22 +32,33 @@ public class ImageService {
         }
 
         return DataBufferUtils.join(filePart.content())
-                .flatMap(inputStream -> readImage(inputStream.asInputStream()))
-                .flatMap(image -> {
-                    if (PNG_FORMAT.equals(fileExtension)) {
-                        return pngToJpg(image);
-                    } else {
-                        return Mono.just(image);
-                    }
-                });
+                .flatMap(inputStream -> readImage(inputStream.asInputStream())
+                        .flatMap(image -> {
+                            if (PNG_FORMAT.equals(fileExtension)) {
+                                return pngToJpg(image);
+                            } else {
+                                return Mono.just(image);
+                            }
+                        }).doOnNext(image -> DataBufferUtils.release(inputStream)));
     }
 
-    public Mono<ByteArrayInputStream> getInputStream(BufferedImage image, String extension) {
-        return Mono.just(new ByteArrayOutputStream())
-                .flatMap(os -> writeImage(image, extension, os)
-                        .thenReturn(os))
-                .map(os -> new ByteArrayInputStream(os.toByteArray()))
-                .doOnError(e -> Mono.error(new FileException("Error on image processing.")));
+    public Mono<InputStream> getInputStream(BufferedImage image, String extension) {
+        return writeImage(image, extension)
+                .map(os -> new ByteArrayInputStream(os.toByteArray()));
+    }
+
+    public BufferedImage cropImage(BufferedImage image) {
+        Integer minSizeSide = Math.min(image.getHeight(), image.getWidth());
+
+        return Scalr.crop(image,
+                (image.getWidth() / 2) - (minSizeSide / 2),
+                (image.getHeight() / 2) - (minSizeSide / 2),
+                minSizeSide,
+                minSizeSide);
+    }
+
+    public BufferedImage resize (BufferedImage image, Integer size) {
+        return Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, size);
     }
 
     private Mono<BufferedImage> pngToJpg(BufferedImage image) {
@@ -54,12 +67,17 @@ public class ImageService {
         return Mono.just(jpgImage);
     }
 
-    private Mono<Boolean> writeImage(BufferedImage image, String extension, ByteArrayOutputStream os) {
-        return Mono.fromCallable(() -> ImageIO.write(image, extension, os));
+    private Mono<ByteArrayOutputStream> writeImage(BufferedImage image, String extension) {
+        return Mono.fromCallable(() -> {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(image, extension, os);
+            return os;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     private Mono<BufferedImage> readImage(InputStream inputStream) {
-        return Mono.fromCallable(() -> ImageIO.read(inputStream));
+        return Mono.fromCallable(() -> ImageIO.read(inputStream))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
 }
