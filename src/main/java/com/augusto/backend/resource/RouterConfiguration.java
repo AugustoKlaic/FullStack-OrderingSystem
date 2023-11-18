@@ -30,7 +30,7 @@ public class RouterConfiguration {
     @Bean
     public RouterFunction<ServerResponse> clientRouter(ClientHandler clientHandler) {
         return route().path("/clients", builder -> builder
-                .nest(accept(MediaType.ALL), uriBuilder -> uriBuilder
+                .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
                         .GET("", clientHandler::getClients)
                         .GET("/{id}", clientHandler::getClientById)
                         .POST("", clientHandler::createClient)
@@ -55,7 +55,7 @@ public class RouterConfiguration {
     public RouterFunction<ServerResponse> productRouter(ProductHandler productHandler) {
         return route().path("/products/search", builder -> builder
                         .GET("", productHandler::searchProducts))
-                .nest(RequestPredicates.path("/products"), uriBuilder -> uriBuilder
+                .nest(RequestPredicates.path("/products"), builder -> builder
                         .GET("/{id}", productHandler::getProductsById))
                 .build();
     }

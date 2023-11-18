@@ -34,11 +34,22 @@ public class ClientHandler {
         this.requestValidator = requestValidator;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public Mono<ServerResponse> getClients(ServerRequest serverRequest) {
+
+        return serverRequest.queryParam("email").map(this::getByEmail).orElseGet(this::getAll);
+    }
+
+    @PreAuthorize("permitAll()")
+    private Mono<ServerResponse> getByEmail(String email) {
+        return Mono.fromCallable(() -> clientService.findByEmail(email))
+                .flatMap(client -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(client))
+                .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    private Mono<ServerResponse> getAll() {
         return Mono.fromCallable(clientService::findAllClients)
-                .flatMap(clients -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(clients));
+                .flatMap(clients -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(clients));
     }
 
     public Mono<ServerResponse> getClientById(ServerRequest serverRequest) {
