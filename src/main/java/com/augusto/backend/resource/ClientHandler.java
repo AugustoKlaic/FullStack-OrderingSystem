@@ -1,5 +1,6 @@
 package com.augusto.backend.resource;
 
+import com.augusto.backend.domain.enums.ClientProfileEnum;
 import com.augusto.backend.dto.ClientDto;
 import com.augusto.backend.dto.CompleteClientDto;
 import com.augusto.backend.resource.validator.ErrorClass;
@@ -9,10 +10,16 @@ import com.augusto.backend.service.ClientService;
 import com.augusto.backend.service.exception.IllegalObjectException;
 import com.augusto.backend.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyExtractors;
@@ -35,21 +42,25 @@ public class ClientHandler {
     }
 
     public Mono<ServerResponse> getClients(ServerRequest serverRequest) {
-
         return serverRequest.queryParam("email").map(this::getByEmail).orElseGet(this::getAll);
     }
 
-    @PreAuthorize("permitAll()")
     private Mono<ServerResponse> getByEmail(String email) {
         return Mono.fromCallable(() -> clientService.findByEmail(email))
                 .flatMap(client -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(client))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, CLIENT_DOMAIN));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     private Mono<ServerResponse> getAll() {
-        return Mono.fromCallable(clientService::findAllClients)
-                .flatMap(clients -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(clients));
+        return ReactiveSecurityContextHolder.getContext()
+                .flatMap(auth -> {
+                    if (auth.getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(ClientProfileEnum.ADMIN.getDescription()))) {
+                        return Mono.fromCallable(clientService::findAllClients)
+                                .flatMap(clients -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(clients));
+                    } else {
+                        return ServerResponse.status(HttpStatus.FORBIDDEN).build();
+                    }
+                });
     }
 
     public Mono<ServerResponse> getClientById(ServerRequest serverRequest) {
