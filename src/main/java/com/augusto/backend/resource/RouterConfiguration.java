@@ -68,4 +68,14 @@ public class RouterConfiguration {
                 .POST("/forgot-password", securityHandler::forgetPassword)
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> addressRouter(AddressHandler addressHandler) {
+        return route().path("/address", builder -> builder
+                .nest(accept(MediaType.APPLICATION_JSON), citiesBuilder -> citiesBuilder
+                        .GET("/state/{stateId}/cities", addressHandler::getCities))
+                .nest(accept(MediaType.APPLICATION_JSON), statesBuilder -> statesBuilder
+                        .GET("/states", addressHandler::getStates)))
+                .build();
+    }
 }
