@@ -2,11 +2,14 @@ package com.augusto.backend.service;
 
 import com.augusto.backend.domain.City;
 import com.augusto.backend.domain.State;
+import com.augusto.backend.dto.CityDto;
+import com.augusto.backend.dto.StateDto;
 import com.augusto.backend.repository.CityRepository;
 import com.augusto.backend.repository.StateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AddressService {
@@ -19,11 +22,21 @@ public class AddressService {
         this.cityRepository = cityRepository;
     }
 
-    public List<State> findStates() {
-        return stateRepository.findAllStates();
+    public List<StateDto> findStates() {
+        return stateRepository.findAllStates().stream()
+                .map(this::toDomainObject).collect(Collectors.toList());
     }
 
-    public List<City> findCitiesByState(Integer stateId) {
-        return cityRepository.findAllCitiesByState(stateId);
+    public List<CityDto> findCitiesByState(Integer stateId) {
+        return cityRepository.findAllCitiesByState(stateId).stream()
+                .map(this::toDomainObject).collect(Collectors.toList());
+    }
+
+    private StateDto toDomainObject(State state) {
+        return new StateDto(state);
+    }
+
+    private CityDto toDomainObject(City city) {
+        return new CityDto(city);
     }
 }
