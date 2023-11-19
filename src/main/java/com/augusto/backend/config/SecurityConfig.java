@@ -30,7 +30,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_MATCHERS_GET = {
             "/products/**",
-            "/categories/**"
+            "/categories/**",
+            "/address/**"
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
