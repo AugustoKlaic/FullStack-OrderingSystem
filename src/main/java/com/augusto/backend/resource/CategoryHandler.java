@@ -57,7 +57,10 @@ public class CategoryHandler {
     public Mono<ServerResponse> updateCategory(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CategoryDto.class)
                 .doOnNext(requestValidator::validateRequest)
-                .map(categoryService::update)
+                .map(categoryDto -> {
+                    categoryDto.setId(Integer.valueOf(serverRequest.pathVariable("id")));
+                    return categoryService.update(categoryDto);
+                })
                 .flatMap(updatedCategory -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(updatedCategory))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
