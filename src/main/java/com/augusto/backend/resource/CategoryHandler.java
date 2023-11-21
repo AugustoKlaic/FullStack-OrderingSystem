@@ -50,7 +50,6 @@ public class CategoryHandler {
                 .map(categoryService::create)
                 .flatMap(createdCategory -> ServerResponse.created(
                         URI.create(CATEGORY_URI.concat(String.valueOf(createdCategory.getId()))))
-                        .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.LOCATION)
                         .bodyValue(createdCategory))
                 .onErrorResume(e -> ErrorResolver.errorHandler(e, CATEGORY_DOMAIN));
     }
