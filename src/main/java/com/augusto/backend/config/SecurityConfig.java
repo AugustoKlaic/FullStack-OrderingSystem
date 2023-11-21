@@ -84,6 +84,7 @@ public class SecurityConfig {
                 HttpMethod.OPTIONS.name()
         ));
         configuration.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        configuration.addExposedHeader(HttpHeaders.LOCATION);
 
         final UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
         corsSource.registerCorsConfiguration("/**", configuration);
