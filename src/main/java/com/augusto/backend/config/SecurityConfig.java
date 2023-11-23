@@ -40,6 +40,13 @@ public class SecurityConfig {
             "/forgot-password/**"
     };
 
+    private static final String[] PUBLIC_MATCHERS_SPRING_DOCS = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/webjars/**"
+    };
+
     private final CustomAuthorizationManager customAuthorizationManager;
     private final CustomAuthenticationManager customAuthenticationManager;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -57,6 +64,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange((exchanges) -> exchanges.pathMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
                         .pathMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+                        .pathMatchers(PUBLIC_MATCHERS_SPRING_DOCS).permitAll()
                         .anyExchange().access(customAuthorizationManager))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

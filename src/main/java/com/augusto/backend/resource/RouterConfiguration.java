@@ -1,9 +1,18 @@
 package com.augusto.backend.resource;
 
-import org.apache.http.entity.ContentType;
+import com.augusto.backend.domain.Product;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -52,6 +61,28 @@ public class RouterConfiguration {
     }
 
     @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/products/search",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = ProductHandler.class,
+                    beanMethod = "searchProducts",
+                    operation = @Operation(operationId = "searchProducts",
+                            responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = Product.class)))})),
+            @RouterOperation(path = "/products/{id}",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = ProductHandler.class,
+                    beanMethod = "getProductsById",
+                    operation = @Operation(operationId = "getProductsById",
+                            responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = Product.class))),
+                                    @ApiResponse(responseCode = "404",
+                                            description = "Product not found")},
+                            parameters = {@Parameter(in = ParameterIn.PATH, name = "id")}))})
     public RouterFunction<ServerResponse> productRouter(ProductHandler productHandler) {
         return route().path("/products/search", builder -> builder
                         .GET("", productHandler::searchProducts))
