@@ -1,6 +1,9 @@
 package com.augusto.backend.resource;
 
 import com.augusto.backend.domain.Product;
+import com.augusto.backend.domain.PurchaseOrder;
+import com.augusto.backend.dto.CityDto;
+import com.augusto.backend.dto.StateDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -51,6 +54,37 @@ public class RouterConfiguration {
     }
 
     @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/purchase-orders",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = PurchaseOrderHandler.class,
+                    beanMethod = "getPurchaseOrders",
+                    operation = @Operation(operationId = "getPurchaseOrders",
+                                    responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = PurchaseOrder.class)))})),
+            @RouterOperation(path = "/purchase-orders/products/{id}",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = PurchaseOrderHandler.class,
+                    beanMethod = "getPurchaseOrderById",
+                    operation = @Operation(operationId = "getPurchaseOrderById",
+                            responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = PurchaseOrder.class))),
+                                    @ApiResponse(responseCode = "404",
+                                            description = "Purchase Order not found")},
+                            parameters = {@Parameter(in = ParameterIn.PATH, name = "id")})),
+            @RouterOperation(path = "/purchase-orders",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.POST,
+                    beanClass = PurchaseOrderHandler.class,
+                    beanMethod = "createPurchaseOrder",
+                    operation = @Operation(operationId = "createPurchaseOrder",
+                            responses = {@ApiResponse(responseCode = "201",
+                                    description = "Created",
+                                    content = @Content(schema = @Schema(implementation = PurchaseOrder.class)))}))})
     public RouterFunction<ServerResponse> purchaseOrderRouter(PurchaseOrderHandler purchaseOrderHandler) {
         return route().path("/purchase-orders", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), uriBuilder -> uriBuilder
@@ -101,6 +135,26 @@ public class RouterConfiguration {
     }
 
     @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/address/states",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = AddressHandler.class,
+                    beanMethod = "getStates",
+                    operation = @Operation(operationId = "getStates",
+                            responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = StateDto.class)))})),
+            @RouterOperation(path = "/address/state/{stateId}/cities",
+                    produces = MediaType.APPLICATION_JSON_VALUE,
+                    method = RequestMethod.GET,
+                    beanClass = AddressHandler.class,
+                    beanMethod = "getCities",
+                    operation = @Operation(operationId = "getCities",
+                            responses = {@ApiResponse(responseCode = "200",
+                                    description = "Successful operation",
+                                    content = @Content(schema = @Schema(implementation = CityDto.class)))},
+                            parameters = {@Parameter(in = ParameterIn.PATH, name = "stateId")}))})
     public RouterFunction<ServerResponse> addressRouter(AddressHandler addressHandler) {
         return route().path("/address", builder -> builder
                 .nest(accept(MediaType.APPLICATION_JSON), citiesBuilder -> citiesBuilder
