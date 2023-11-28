@@ -16,19 +16,14 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI springOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
-        return new OpenAPI()
-                .components(
-                        new Components()
-                                .addSecuritySchemes(securitySchemeName,
-                                        new SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")
-                                )
-                )
+        final String securitySchemeName = "JWT Bearer Auth";
+        return new OpenAPI().components(new Components()
+                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("Bearer")
+                                .bearerFormat("JWT")))
                 .security(List.of(new SecurityRequirement().addList(securitySchemeName)))
-                .info(new Info().title("test").version("v1"));
+                .info(new Info().title("Fullstack-OrderingSystem").version("v1"));
     }
 
     @Bean
