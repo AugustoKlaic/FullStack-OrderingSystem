@@ -23,22 +23,22 @@ public class ErrorResolver {
         } else if (error instanceof IllegalObjectException) {
             return ServerResponse.badRequest()
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
-        } else if (error instanceof DataIntegrityViolationException){
+        } else if (error instanceof DataIntegrityViolationException) {
             return ServerResponse.unprocessableEntity()
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
         } else if (error instanceof AuthenticationException) {
             return ServerResponse.status(HttpStatus.UNAUTHORIZED)
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
-        } else if(error instanceof AuthorizationException) {
+        } else if (error instanceof AuthorizationException) {
             return ServerResponse.status(HttpStatus.FORBIDDEN)
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
-        } else if(error instanceof FileException) {
+        } else if (error instanceof FileException) {
             return ServerResponse.badRequest()
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
-        } else if(error instanceof AmazonServiceException) {
+        } else if (error instanceof AmazonServiceException) {
             return ServerResponse.status(HttpStatus.valueOf(((AmazonServiceException) error).getStatusCode()))
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
-        } else if(error instanceof AmazonClientException) {
+        } else if (error instanceof AmazonClientException) {
             return ServerResponse.badRequest()
                     .bodyValue(new ErrorClass(domain, error.getMessage()));
         } else {
